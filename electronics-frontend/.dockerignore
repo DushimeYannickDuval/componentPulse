@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.npm/
+
+# Build output
+.next/
+out/
+dist/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS / VCS
+.DS_Store
+.git/
+.gitignore
+
+# Env files
+.env
+.env.*
+
+# Editor
+.vscode/
+.idea/
+
+# Misc
+coverage/
+*.swp

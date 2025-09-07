@@ -3,6 +3,8 @@ from pathlib import Path
 from decouple import config
 from datetime import timedelta
 
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY', default='your-secret-key-here-change-in-production')
@@ -11,7 +13,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config(
     'ALLOWED_HOSTS', 
-    default='localhost,127.0.0.1,0.0.0.0',
+    default='localhost,127.0.0.1,0.0.0.0,.railway.app',
     cast=lambda v: [s.strip() for s in v.split(',')]
 )
 
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,6 +96,11 @@ DATABASES = {
     }
 }
 
+# Override database config from DATABASE_URL if provided (e.g., on Railway)
+DATABASE_URL = config('DATABASE_URL', default=None)
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+
 # Custom user model
 AUTH_USER_MODEL = 'accounts.User'
 
@@ -114,7 +122,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+_static_dir = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [_static_dir] if os.path.isdir(_static_dir) else []
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -178,14 +188,26 @@ GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID', default='')
 GOOGLE_CLIENT_SECRET = config('GOOGLE_CLIENT_SECRET', default='')
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "https://your-production-domain.com",
-]
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='http://localhost:3000,http://127.0.0.1:3000',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
+
+# Allow Railway wildcard frontends via regex
+CORS_ALLOWED_ORIGIN_REGEXES = config(
+    'CORS_ALLOWED_ORIGIN_REGEXES',
+    default=r'^https://.*\\.railway\\.app$',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
+
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost:3000,https://*.railway.app',
+    cast=lambda v: [s.strip() for s in v.split(',')]
+)
 
 # Allow all origins in development (be careful with this in production)
 if DEBUG:
