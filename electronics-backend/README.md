@@ -67,6 +67,36 @@ python manage.py runserver 0.0.0.0:8000
 
 API root: http://127.0.0.1:8000/
 
+## Start Postgres with docker-compose (optional)
+
+You can run a local Postgres using the provided compose file at the repository root.
+
+From the repo root:
+
+```bash
+docker compose -f docker-compose.postgres.yml up -d
+# Stop when done
+docker compose -f docker-compose.postgres.yml down
+```
+
+From this backend folder (relative path to the root compose file):
+
+```bash
+docker compose -f ../docker-compose.postgres.yml up -d
+docker compose -f ../docker-compose.postgres.yml down
+```
+
+Then configure Django to use this database by setting the `DB_*` variables in your `.env` (do not set `DATABASE_URL` locally):
+
+```env
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=cpulse
+DB_USER=cpulse
+DB_PASSWORD=cpulse
+DB_HOST=127.0.0.1
+DB_PORT=5432
+```
+
 ## Run with Docker
 
 Build and run using your `.env`:
