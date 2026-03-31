@@ -13,6 +13,9 @@ import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
+import { doc, getDoc } from 'firebase/firestore';
+import { FIRESTORE } from 'src/lib/firebase';
+
 import { CheckoutContext } from './checkout-context';
 
 // ----------------------------------------------------------------------
@@ -74,21 +77,52 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
     setField('total', subtotal - state.discount + state.shipping);
   }, [setField, state.discount, state.items, state.shipping]);
 
+  const [hydrated, setHydrated] = useState(false);
+
   useEffect(() => {
     const initializeCheckout = async () => {
       try {
         setLoading(true);
-        const restoredValue = getStorage(CHECKOUT_STORAGE_KEY);
+        const restoredValue = getStorage(CHECKOUT_STORAGE_KEY) as ICheckoutState;
         if (restoredValue) {
+          if (restoredValue.items && restoredValue.items.length > 0) {
+            const updatedItems = await Promise.all(
+              restoredValue.items.map(async (item: ICheckoutItem) => {
+                try {
+                  const docRef = doc(FIRESTORE, 'products', item.id);
+                  const docSnap = await getDoc(docRef);
+                  if (docSnap.exists()) {
+                    const currentStock = docSnap.data().stock ?? 0;
+                    return {
+                      ...item,
+                      available: currentStock,
+                      quantity: Math.min(item.quantity, currentStock),
+                    };
+                  }
+                } catch (error) {
+                  console.error('Failed to fetch stock for item', item.id, error);
+                }
+                return { ...item, available: 0, quantity: 0 };
+              })
+            );
+
+            const validItems = updatedItems.filter((item) => item.quantity > 0);
+            if (!isEqual(restoredValue.items, validItems)) {
+              setField('items', validItems);
+            }
+          }
           updateTotals();
         }
       } finally {
         setLoading(false);
+        setHydrated(true);
       }
     };
 
-    initializeCheckout();
-  }, [updateTotals]);
+    if (!hydrated) {
+      initializeCheckout();
+    }
+  }, [hydrated, setField, updateTotals]);
 
   const onChangeStep = useCallback(
     (type: 'back' | 'next' | 'go', step?: number) => {
@@ -125,8 +159,15 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       }
 
       setField('items', updatedItems);
+      
+      // Immediately update totals after adding to cart
+      const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
+      const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);
+      setField('subtotal', subtotal);
+      setField('totalItems', totalItems);
+      setField('total', subtotal - state.discount + state.shipping);
     },
-    [setField, state.items]
+    [setField, state.items, state.discount, state.shipping]
   );
 
   const onDeleteCartItem = useCallback(
@@ -134,8 +175,15 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       const updatedItems = state.items.filter((item) => item.id !== itemId);
 
       setField('items', updatedItems);
+      
+      // Update totals after deleting item
+      const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
+      const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);
+      setField('subtotal', subtotal);
+      setField('totalItems', totalItems);
+      setField('total', subtotal - state.discount + state.shipping);
     },
-    [setField, state.items]
+    [setField, state.items, state.discount, state.shipping]
   );
 
   const onChangeItemQuantity = useCallback(
@@ -148,8 +196,15 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       });
 
       setField('items', updatedItems);
+      
+      // Update totals after changing quantity
+      const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
+      const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);
+      setField('subtotal', subtotal);
+      setField('totalItems', totalItems);
+      setField('total', subtotal - state.discount + state.shipping);
     },
-    [setField, state.items]
+    [setField, state.items, state.discount, state.shipping]
   );
 
   const onCreateBillingAddress = useCallback(
@@ -174,10 +229,8 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
   );
 
   const onResetCart = useCallback(() => {
-    if (completed) {
-      resetState(initialState);
-    }
-  }, [completed, resetState]);
+    resetState(initialState);
+  }, [resetState]);
 
   const memoizedValue = useMemo(
     () => ({

@@ -55,8 +55,8 @@ export function HomeTopProducts() {
                                 <Skeleton variant="text" width="50%" />
                             </Paper>
                         ))
-                        : smallProducts.map((product) => (
-                            <ProductItemHot key={product.id} product={product} />
+                        : smallProducts.map((product, index) => (
+                            <ProductItemHot key={`${product.id}-${index}`} product={product} />
                         ))}
                 </Box>
 

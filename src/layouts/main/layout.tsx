@@ -13,6 +13,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
+import Collapse from '@mui/material/Collapse';
 import ListItem from '@mui/material/ListItem';
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
@@ -46,19 +47,41 @@ import { CustomPopover } from 'src/components/custom-popover';
 // ----------------------------------------------------------------------
 
 function NewsletterForm() {
-  const { subscribe, loading } = useNewsletter();
+  const { subscribe, checkSubscription, unsubscribe, loading } = useNewsletter();
   const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleCheck = async () => {
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      const exists = await checkSubscription(email);
+      setIsSubscribed(exists);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    const success = await subscribe(email);
-    if (success) {
-      toast.success('Thank you for subscribing!');
-      setEmail('');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error('Please enter a valid email address.');
+      return;
+    }
+
+    if (isSubscribed) {
+      const success = await unsubscribe(email);
+      if (success) {
+        toast.success('Successfully unsubscribed.');
+        setEmail('');
+        setIsSubscribed(false);
+      }
     } else {
-      toast.error('Failed to subscribe or already subscribed.');
+      const success = await subscribe(email);
+      if (success) {
+        toast.success('Thank you for subscribing!');
+        setEmail('');
+      } else {
+        toast.error('Failed to subscribe or already subscribed.');
+      }
     }
   };
 
@@ -70,11 +93,15 @@ function NewsletterForm() {
         placeholder="Enter your email"
         type="email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          if (isSubscribed) setIsSubscribed(false); // Reset to subscribe on typing unless blurred
+        }}
+        onBlur={handleCheck}
         variant="outlined"
         size="small"
         sx={{
-          bgcolor: 'common.white',
+          bgcolor: 'background.paper',
           borderRadius: 1,
           '& .MuiOutlinedInput-root': {
             borderRadius: 1,
@@ -84,14 +111,14 @@ function NewsletterForm() {
       <Button
         type="submit"
         variant="contained"
-        color="secondary"
+        color={isSubscribed ? 'error' : 'secondary'}
         disabled={loading}
         sx={{
           whiteSpace: 'nowrap',
           px: 3,
         }}
       >
-        {loading ? 'Subscribing...' : 'Subscribe'}
+        {loading ? 'Processing...' : (isSubscribed ? 'Unsubscribe' : 'Subscribe')}
       </Button>
     </Box>
   );
@@ -135,6 +162,7 @@ export function MainLayout({
   const { value: mobileOpen, onFalse: onMobileClose, onTrue: onMobileOpen } = useBoolean();
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [mobileCatsOpen, setMobileCatsOpen] = useState(false);
 
   const mdUp = useMediaQuery((theme) => theme.breakpoints.up('md'));
 
@@ -162,13 +190,62 @@ export function MainLayout({
         </IconButton>
       </Box>
       <Divider />
-      <List>
+      <List sx={{ px: 1 }}>
+        {/* Categories — inline accordion */}
         <ListItem disablePadding>
-           <ListItemButton onClick={() => setAnchorEl(document.body)} sx={{ justifyContent: 'space-between' }}>
-             <ListItemText primary="Categories" />
-             <Iconify icon="eva:arrow-ios-downward-fill" />
-           </ListItemButton>
+          <ListItemButton
+            onClick={() => setMobileCatsOpen((prev) => !prev)}
+            sx={{ justifyContent: 'space-between', borderRadius: 1 }}
+          >
+            <ListItemText
+              primary="Categories"
+              primaryTypographyProps={{ fontWeight: 600 }}
+            />
+            <Iconify
+              icon={mobileCatsOpen ? 'eva:arrow-ios-upward-fill' : 'eva:arrow-ios-downward-fill'}
+              width={18}
+            />
+          </ListItemButton>
         </ListItem>
+
+        <Collapse in={mobileCatsOpen} timeout="auto" unmountOnExit>
+          <Box sx={{ bgcolor: 'background.neutral', borderRadius: 1.5, mx: 0.5, mb: 0.5, py: 0.5 }}>
+            {activeCategories.map((cat) => (
+              <ListItemButton
+                key={cat.id}
+                onClick={() => {
+                  onMobileClose();
+                  setMobileCatsOpen(false);
+                  router.push(`${paths.products}?category=${cat.slug}`);
+                }}
+                sx={{ borderRadius: 1, py: 0.85, gap: 1.5, px: 1.5 }}
+              >
+                <Box
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 1,
+                    bgcolor: 'action.selected',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <Iconify
+                    icon={cat.icon || 'solar:box-bold-duotone'}
+                    width={16}
+                    sx={{ color: cat.color || 'primary.main' }}
+                  />
+                </Box>
+                <Typography variant="body2" sx={{ lineHeight: 1.4, fontWeight: 500 }}>
+                  {cat.name}
+                </Typography>
+              </ListItemButton>
+            ))}
+          </Box>
+        </Collapse>
+
         {NAV_ITEMS.map((item) => (
           <ListItem key={item.title} disablePadding>
             <ListItemButton
@@ -176,6 +253,7 @@ export function MainLayout({
               href={item.path}
               onClick={onMobileClose}
               selected={pathname === item.path}
+              sx={{ borderRadius: 1 }}
             >
               <ListItemText primary={item.title} />
             </ListItemButton>
@@ -290,47 +368,52 @@ export function MainLayout({
         </Box>
       ),
       bottomArea: (
-        <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', display: { xs: 'none', md: 'block' } }}>
-          <Container maxWidth="lg">
-            <Box component="nav" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, py: 1.5 }}>
-              <Link
-                  component="button"
-                  onClick={handleOpenCategories}
-                  color="text.primary"
-                  underline="none"
-                  sx={{
-                    typography: 'subtitle2',
-                    fontWeight: 600,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    transition: 'color 0.2s',
-                    '&:hover': { color: 'primary.main' },
-                  }}
-                >
-                  Categories <Iconify icon="eva:arrow-ios-downward-fill" width={16} />
-              </Link>
-
-              {NAV_ITEMS.map((item) => (
+        <>
+          <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', display: { xs: 'none', md: 'block' } }}>
+            <Container maxWidth="lg">
+              <Box component="nav" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, py: 1.5 }}>
                 <Link
-                  key={item.title}
-                  component={RouterLink}
-                  href={item.path}
-                  color={pathname === item.path ? 'primary' : 'text.primary'}
-                  underline="none"
-                  sx={{
-                    typography: 'subtitle2',
-                    fontWeight: pathname === item.path ? 700 : 600,
-                    transition: 'color 0.2s',
-                    '&:hover': { color: 'primary.main' },
-                  }}
-                >
-                  {item.title}
+                    component="button"
+                    onClick={handleOpenCategories}
+                    color="text.primary"
+                    underline="none"
+                    sx={{
+                      typography: 'subtitle2',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.5,
+                      transition: 'color 0.2s',
+                      '&:hover': { color: 'primary.main' },
+                    }}
+                  >
+                    Categories <Iconify icon="eva:arrow-ios-downward-fill" width={16} />
                 </Link>
-              ))}
-            </Box>
-          </Container>
-        </Box>
+
+                {NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.title}
+                    component={RouterLink}
+                    href={item.path}
+                    color={pathname === item.path ? 'primary' : 'text.primary'}
+                    underline="none"
+                    sx={{
+                      typography: 'subtitle2',
+                      fontWeight: pathname === item.path ? 700 : 600,
+                      transition: 'color 0.2s',
+                      '&:hover': { color: 'primary.main' },
+                    }}
+                  >
+                    {item.title}
+                  </Link>
+                ))}
+              </Box>
+            </Container>
+          </Box>
+          <Box sx={{ display: { xs: 'block', md: 'none' }, px: 2, py: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
+            <HeaderSearch />
+          </Box>
+        </>
       ),
     };
 
@@ -490,7 +573,10 @@ export function MainLayout({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" sx={{ height: 24, filter: 'brightness(0) invert(1)' }} />
             <Box component="img" src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" sx={{ height: 24 }} />
-            <Box component="img" src="https://flutterwave.com/images/logo/logo-mark/full.svg" alt="Flutterwave" sx={{ height: 24 }} />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'grey.500' }}>
+              <Iconify icon="solar:lock-bold" width={16} />
+              <Typography variant="caption" sx={{ color: 'grey.500', fontWeight: 600 }}>Secured by Pesapal</Typography>
+            </Box>
           </Box>
         </Box>
       </Container>
@@ -511,16 +597,33 @@ export function MainLayout({
         {renderMain()}
       </LayoutSection>
 
-      {/* Categories Dropdown Popover */}
+      {/* Categories Dropdown Popover — Desktop only */}
       <CustomPopover
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
         onClose={handleCloseCategories}
-        slotProps={{ paper: { sx: { width: 320, p: 2, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1 } } }}
+        slotProps={{
+          paper: {
+            sx: {
+              width: 280,
+              p: 1.5,
+              maxHeight: 480,
+              overflowY: 'auto',
+            },
+          },
+        }}
       >
+        <Typography
+          variant="overline"
+          sx={{ px: 1.5, pb: 1, pt: 0.5, display: 'block', color: 'text.secondary', letterSpacing: 1 }}
+        >
+          Shop by Category
+        </Typography>
+
         {activeCategories.map((category) => (
           <Button
             key={category.id}
+            fullWidth
             color="inherit"
             variant="text"
             onClick={() => {
@@ -530,19 +633,49 @@ export function MainLayout({
             }}
             sx={{
               justifyContent: 'flex-start',
-              px: 1,
-              py: 1.5,
+              px: 1.5,
+              py: 1,
+              borderRadius: 1,
               typography: 'body2',
               fontWeight: 500,
+              textAlign: 'left',
+              gap: 1.5,
+              '&:hover': {
+                bgcolor: 'action.hover',
+              },
             }}
-            startIcon={
+          >
+            <Box
+              sx={{
+                width: 32,
+                height: 32,
+                borderRadius: 1,
+                bgcolor: 'action.selected',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
               <Iconify
                 icon={category.icon || 'solar:box-bold-duotone'}
-                sx={{ color: category.color || 'text.secondary' }}
+                width={18}
+                sx={{ color: category.color || 'primary.main' }}
               />
-            }
-          >
-            {category.name}
+            </Box>
+            <Box sx={{ minWidth: 0, textAlign: 'left' }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 500,
+                  lineHeight: 1.4,
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {category.name}
+              </Typography>
+            </Box>
           </Button>
         ))}
       </CustomPopover>

@@ -9,7 +9,10 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
 import { inputBaseClasses } from '@mui/material/InputBase';
+
+import { toast } from 'sonner';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -18,8 +21,10 @@ import { fCurrency } from 'src/utils/format-number';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
+import { Markdown } from 'src/components/markdown';
 
 import { useCheckoutContext } from 'src/sections/checkout/context';
+import { useGetApprovedReviews } from 'src/hooks/firebase/use-reviews';
 
 // ----------------------------------------------------------------------
 
@@ -29,7 +34,13 @@ type Props = {
 
 export function ProductDetailsInfo({ product }: Props) {
     const checkout = useCheckoutContext();
+    const { approvedReviews: reviews } = useGetApprovedReviews(product.id);
     const [quantity, setQuantity] = useState(1);
+
+    const totalReviews = reviews.length;
+    const ratingAverage = totalReviews > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) / totalReviews
+        : 0;
 
     const handleAddToCart = () => {
         checkout.onAddToCart({
@@ -38,17 +49,39 @@ export function ProductDetailsInfo({ product }: Props) {
             price: product.salePrice || product.price,
             coverUrl: product.images?.[0]?.url || '',
             quantity,
-            available: product.quantity || 10,
+            available: product.stock || 0,
         });
+    };
+
+    const handleShare = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: product.name,
+                    url: window.location.href,
+                });
+            } else {
+                await navigator.clipboard.writeText(window.location.href);
+                toast.success('Link copied to clipboard!');
+            }
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
     };
 
     const isSale = product.salePrice && product.salePrice < product.price;
 
     return (
         <Box>
-            <Label color={product.quantity > 0 ? 'success' : 'error'} sx={{ mb: 3 }}>
-                {product.quantity > 0 ? 'In Stock' : 'Out of Stock'}
-            </Label>
+            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" sx={{ mb: 3 }}>
+                {/*<Label color={product.stock > 0 ? 'success' : 'error'}>*/}
+                {/*    {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}*/}
+                {/*</Label>*/}
+
+                <IconButton onClick={handleShare}>
+                    <Iconify icon="solar:share-bold" />
+                </IconButton>
+            </Stack>
 
             <Stack spacing={1} sx={{ mb: 2 }}>
                 <Typography variant="overline" sx={{ color: 'text.secondary' }}>
@@ -56,11 +89,11 @@ export function ProductDetailsInfo({ product }: Props) {
                 </Typography>
                 <Typography variant="h4">{product.name}</Typography>
 
-                {/* Note: This rating will be hydrated with actual data later */}
+                {/* Dynamic DB Ratings */}
                 <Stack spacing={0.5} direction="row" alignItems="center">
-                    <Rating size="small" value={4.5} readOnly precision={0.5} />
+                    <Rating size="small" value={ratingAverage} readOnly precision={0.5} />
                     <Typography variant="caption" sx={{ color: 'text.disabled' }}>
-                        (24 reviews)
+                        ({totalReviews} review{totalReviews !== 1 && 's'})
                     </Typography>
                 </Stack>
             </Stack>
@@ -80,9 +113,9 @@ export function ProductDetailsInfo({ product }: Props) {
                         <Box component="span">{fCurrency(product.price)}</Box>
                     )}
                 </Stack>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    {product.description || 'No description available for this product.'}
-                </Typography>
+                <Box>
+                    <Markdown children={product.description || 'No description available for this product.'} />
+                </Box>
             </Stack>
 
             <Divider sx={{ borderStyle: 'dashed', my: 3 }} />
@@ -106,7 +139,7 @@ export function ProductDetailsInfo({ product }: Props) {
                             [`& .${inputBaseClasses.input}`]: { py: 0, height: 48 },
                         }}
                     >
-                        {Array.from({ length: Math.min(product.quantity || 10, 10) }, (_, i) => i + 1).map((option) => (
+                        {Array.from({ length: Math.min(product.stock || 1, 10) }, (_, i) => i + 1).map((option) => (
                             <option key={option} value={option}>
                                 {option}
                             </option>
@@ -120,7 +153,7 @@ export function ProductDetailsInfo({ product }: Props) {
                         color="inherit"
                         variant="contained"
                         onClick={handleAddToCart}
-                        disabled={product.quantity === 0}
+                        disabled={product.stock === 0}
                         startIcon={<Iconify icon="solar:cart-3-outline" />}
                         sx={{ width: { xs: 1, sm: 'auto' } }}
                     >
@@ -134,7 +167,7 @@ export function ProductDetailsInfo({ product }: Props) {
                         color="primary"
                         variant="contained"
                         onClick={handleAddToCart}
-                        disabled={product.quantity === 0}
+                        disabled={product.stock === 0}
                         sx={{ width: { xs: 1, sm: 'auto' } }}
                     >
                         Buy now

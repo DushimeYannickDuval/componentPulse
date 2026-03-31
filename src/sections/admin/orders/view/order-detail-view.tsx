@@ -71,8 +71,7 @@ const STATUS_CONFIG: Record<OrderStatus, {
 };
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
-  flutterwave: 'Card (Flutterwave)',
-  mobile_money: 'Mobile Money',
+  pesapal: 'Online Payment (Pesapal)',
   cash_on_delivery: 'Cash on Delivery',
 };
 

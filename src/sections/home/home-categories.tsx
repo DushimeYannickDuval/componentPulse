@@ -211,18 +211,18 @@ export function HomeCategories() {
           </Carousel>
         )}
 
-        <CarouselDotButtons
-          scrollSnaps={carousel.dots.scrollSnaps}
-          selectedIndex={carousel.dots.selectedIndex}
-          onClickDot={carousel.dots.onClickDot}
-          sx={{
-            mt: 8,
-            width: 1,
-            color: 'primary.main',
-            justifyContent: 'center',
-            display: { xs: 'inline-flex', md: 'none' },
-          }}
-        />
+        {/*<CarouselDotButtons*/}
+        {/*  scrollSnaps={carousel.dots.scrollSnaps}*/}
+        {/*  selectedIndex={carousel.dots.selectedIndex}*/}
+        {/*  onClickDot={carousel.dots.onClickDot}*/}
+        {/*  sx={{*/}
+        {/*    mt: 8,*/}
+        {/*    width: 1,*/}
+        {/*    color: 'primary.main',*/}
+        {/*    justifyContent: 'center',*/}
+        {/*    display: { xs: 'inline-flex', md: 'none' },*/}
+        {/*  }}*/}
+        {/*/>*/}
       </Container>
     </Box>
   );

@@ -38,7 +38,7 @@ import { useCreateOrder, useUserProfile, useDeliveryZones, useValidateCoupon, us
 import { fCurrency } from 'src/utils/format-number';
 
 import { FIRESTORE } from 'src/lib/firebase';
-import { generateTxRef, initiateFlutterwavePayment, FLUTTERWAVE_PAYMENT_OPTIONS } from 'src/lib/flutterwave';
+import { generateMerchantRef } from 'src/lib/pesapal';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -50,16 +50,10 @@ import { useCheckoutContext } from '../context';
 
 const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; description: string; icon: string }[] = [
   {
-    value: 'flutterwave',
-    label: 'Pay with Card',
-    description: 'Visa, Mastercard, Verve',
+    value: 'pesapal',
+    label: 'Pay Online',
+    description: 'Card, Mobile Money, Bank Transfer via Pesapal',
     icon: 'solar:card-bold-duotone',
-  },
-  {
-    value: 'mobile_money',
-    label: 'Mobile Money',
-    description: 'MTN, Airtel Money',
-    icon: 'solar:smartphone-bold-duotone',
   },
   {
     value: 'cash_on_delivery',
@@ -77,14 +71,14 @@ export function CheckoutView() {
   const { createOrder, loading: creatingOrder, error: orderError } = useCreateOrder();
   const { updatePaymentStatus } = useUpdatePaymentStatus();
   const { zones, loading: zonesLoading } = useDeliveryZones(true); // active zones only
-  const { validateCoupon, validating: couponValidating } = useValidateCoupon();
+  const { validateCoupon, incrementCouponUsage, validating: couponValidating } = useValidateCoupon();
 
   const [activeStep, setActiveStep] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [useNewAddress, setUseNewAddress] = useState(false);
   const [shippingInfo, setShippingInfo] = useState({
-    firstName: '',
-    lastName: '',
+    firstName: user?.displayName?.split(' ')[0] || '',
+    lastName: user?.displayName?.split(' ')[1] || '',
     email: user?.email || '',
     phone: '',
     address: '',
@@ -98,13 +92,13 @@ export function CheckoutView() {
   const [pickupDate, setPickupDate] = useState<string>('');
   const { locations: pickupLocations, loading: pickupLoading } = usePickupLocations();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('flutterwave');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('pesapal');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Coupon state
   const [couponInput, setCouponInput] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<{ id: string; code: string; discount: number } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ id: string; code: string; type: 'percentage' | 'fixed'; value: number; minOrderAmount?: number } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const savedAddresses = useMemo(() => profile?.addresses || [], [profile?.addresses]);
@@ -128,16 +122,52 @@ export function CheckoutView() {
 
   const selectedZone = zones.find((z) => z.id === selectedZoneId) ?? null;
   const shipping = deliveryMethod === 'delivery' ? (selectedZone?.fee ?? 0) : 0;
-  const couponDiscount = appliedCoupon?.discount ?? 0;
+  
   const { items, subtotal, discount: cartDiscount } = checkout.state;
+
+  // Dynamic Component Level Coupon Computations preventing "Static Exploit" overlaps
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.type === 'percentage'
+      ? Math.round((subtotal * appliedCoupon.value) / 100)
+      : appliedCoupon.value
+    : 0;
+
   const discount = cartDiscount + couponDiscount;
   const total = subtotal - discount + shipping;
+
+  // Real-Time Listener unhooking Coupons when Subtotals drop below Limit
+  useEffect(() => {
+    if (appliedCoupon && appliedCoupon.minOrderAmount && subtotal < appliedCoupon.minOrderAmount) {
+      setAppliedCoupon(null);
+      setCouponError(`Coupon removed: Minimum order amount of UGX ${appliedCoupon.minOrderAmount.toLocaleString()} required`);
+    }
+  }, [subtotal, appliedCoupon]);
 
   const steps = ['Shipping', 'Delivery', 'Payment'];
 
   const getSelectedAddress = (): UserAddress | null => {
     if (useNewAddress || !selectedAddressId) return null;
     return savedAddresses.find((addr) => addr.id === selectedAddressId) || null;
+  };
+
+  const checkValidationSilently = (): boolean => {
+    if (!useNewAddress && savedAddresses.length > 0) {
+      if (!selectedAddressId) return false;
+      if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) return false;
+      return true;
+    }
+
+    const phoneRegex = /^(0|\+?256)[1-9][0-9]{7,12}$/;
+    const cleanPhone = shippingInfo.phone.trim().replace(/\s/g, '');
+
+    if (!shippingInfo.firstName.trim() || shippingInfo.firstName.trim().length < 2) return false;
+    if (!shippingInfo.lastName.trim() || shippingInfo.lastName.trim().length < 2) return false;
+    if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) return false;
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) return false;
+    if (!shippingInfo.address.trim() || shippingInfo.address.trim().length < 5) return false;
+    if (!shippingInfo.city.trim()) return false;
+
+    return true;
   };
 
   const validateShippingInfo = (): boolean => {
@@ -147,34 +177,36 @@ export function CheckoutView() {
         setError('Please select a delivery address');
         return false;
       }
-      // Validate email is still required
-      if (!shippingInfo.email.trim() || !shippingInfo.email.includes('@')) {
-        setError('Valid email is required');
+      if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) {
+        setError('A valid email is required');
         return false;
       }
       setError(null);
       return true;
     }
 
+    const phoneRegex = /^(0|\+?256)[1-9][0-9]{7,12}$/;
+    const cleanPhone = shippingInfo.phone.trim().replace(/\s/g, '');
+
     // Validate new address form
-    if (!shippingInfo.firstName.trim()) {
-      setError('First name is required');
+    if (!shippingInfo.firstName.trim() || shippingInfo.firstName.trim().length < 2) {
+      setError('Valid first name is required');
       return false;
     }
-    if (!shippingInfo.lastName.trim()) {
-      setError('Last name is required');
+    if (!shippingInfo.lastName.trim() || shippingInfo.lastName.trim().length < 2) {
+      setError('Valid last name is required');
       return false;
     }
-    if (!shippingInfo.email.trim() || !shippingInfo.email.includes('@')) {
-      setError('Valid email is required');
+    if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) {
+      setError('A valid email address is required');
       return false;
     }
-    if (!shippingInfo.phone.trim()) {
-      setError('Phone number is required');
+    if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+      setError('Valid phone number is required (e.g. +256 700...)');
       return false;
     }
-    if (!shippingInfo.address.trim()) {
-      setError('Address is required');
+    if (!shippingInfo.address.trim() || shippingInfo.address.trim().length < 5) {
+      setError('A complete physical address is required (min 5 chars)');
       return false;
     }
     if (!shippingInfo.city.trim()) {
@@ -231,11 +263,14 @@ export function CheckoutView() {
       setAppliedCoupon(null);
       return;
     }
-    const discountAmount =
-      coupon.type === 'percentage'
-        ? Math.round((subtotal * coupon.value) / 100)
-        : coupon.value;
-    setAppliedCoupon({ id: coupon.id, code: coupon.code, discount: discountAmount });
+    
+    setAppliedCoupon({ 
+      id: coupon.id, 
+      code: coupon.code, 
+      type: coupon.type, 
+      value: coupon.value, 
+      minOrderAmount: coupon.minOrderAmount 
+    });
     setCouponError(null);
   };
 
@@ -371,6 +406,9 @@ export function CheckoutView() {
         // For cash on delivery, create order directly
         const result = await createOrder(buildOrderData());
         if (result) {
+          if (appliedCoupon) {
+            await incrementCouponUsage(appliedCoupon.id);
+          }
           await sendConfirmationEmail(result.orderNumber);
           checkout.onResetCart();
           router.push(`/checkout/success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`);
@@ -378,8 +416,8 @@ export function CheckoutView() {
           setError(orderError || 'Failed to create order');
         }
       } else {
-        // For Flutterwave payments (card or mobile money)
-        await initializeFlutterwavePayment();
+        // For Pesapal payments — redirect to hosted payment page
+        await initiatePesapalPayment();
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred');
@@ -388,69 +426,43 @@ export function CheckoutView() {
     }
   };
 
-  const initializeFlutterwavePayment = async () => {
-    const publicKey = process.env.NEXT_PUBLIC_FLUTTERWAVE_PUBLIC_KEY;
-
-    if (!publicKey) {
-      setError('Payment configuration error. Please contact support.');
-      return;
-    }
-
-    const txRef = generateTxRef('CP');
-    const paymentOptions = paymentMethod === 'mobile_money'
-      ? FLUTTERWAVE_PAYMENT_OPTIONS.mobileMoney
-      : FLUTTERWAVE_PAYMENT_OPTIONS.card;
-
+  const initiatePesapalPayment = async () => {
     try {
-      await initiateFlutterwavePayment(
-        {
-          public_key: publicKey,
-          tx_ref: txRef,
+      // Save pending order to sessionStorage so the callback page can reconstruct it
+      const pendingOrderData = {
+        ...buildOrderData(),
+        paymentMethod: 'pesapal' as const,
+        appliedCouponId: appliedCoupon?.id || null,
+      };
+      sessionStorage.setItem('pp_pending_order', JSON.stringify(pendingOrderData));
+
+      const merchantRef = generateMerchantRef('CP');
+
+      const res = await fetch('/api/payments/pesapal/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           amount: total,
-          currency: 'UGX',
-          payment_options: paymentOptions,
+          description: `ComponentPulse Order (${items.length} item${items.length !== 1 ? 's' : ''})`,
+          orderId: merchantRef,
           customer: {
             email: shippingInfo.email,
-            phone_number: shippingInfo.phone,
-            name: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+            phone: shippingInfo.phone,
+            firstName: shippingInfo.firstName,
+            lastName: shippingInfo.lastName,
           },
-          customizations: {
-            title: 'ComponentPulse',
-            description: `Payment for ${items.length} item(s)`,
-            logo: `${process.env.NEXT_PUBLIC_APP_URL}/logo/logo-single.svg`,
-          },
-          meta: {
-            consumer_id: user?.uid,
-            consumer_email: shippingInfo.email,
-          },
-        },
-        async (response) => {
-          // Payment successful
-          if (response.status === 'successful') {
-            const orderData = {
-              ...buildOrderData(),
-              paymentReference: response.flw_ref,
-            };
+        }),
+      });
 
-            const result = await createOrder(orderData);
-            if (result) {
-              // Mark payment as paid — createOrder always starts as 'pending'
-              await updatePaymentStatus(result.orderId, 'paid', response.flw_ref);
-              await sendConfirmationEmail(result.orderNumber);
-              checkout.onResetCart();
-              router.push(`/checkout/success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`);
-            } else {
-              setError('Payment successful but order creation failed. Please contact support with reference: ' + response.flw_ref);
-            }
-          } else {
-            setError('Payment was not successful. Please try again.');
-          }
-        },
-        () => {
-          // Payment modal closed
-          setLoading(false);
-        }
-      );
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error || 'Failed to initiate payment. Please try again.');
+        return;
+      }
+
+      // Full-page redirect to Pesapal hosted payment page
+      window.location.href = data.redirect_url;
     } catch (err: any) {
       setError(err.message || 'Failed to initialize payment');
     }
@@ -885,9 +897,9 @@ export function CheckoutView() {
         </Stack>
       </RadioGroup>
 
-      {paymentMethod === 'flutterwave' && (
+      {paymentMethod === 'pesapal' && (
         <Alert severity="info" sx={{ mt: 3 }}>
-          You will be redirected to Flutterwave&apos;s secure payment page to complete your payment.
+          You will be redirected to Pesapal&apos;s secure payment page to complete your payment via Card, Mobile Money, or Bank Transfer.
         </Alert>
       )}
 
@@ -1063,7 +1075,7 @@ export function CheckoutView() {
               <Button
                 variant="contained"
                 onClick={handleNext}
-                disabled={loading || creatingOrder}
+                disabled={loading || creatingOrder || (activeStep === 0 && !checkValidationSilently())}
                 endIcon={
                   loading || creatingOrder ? (
                     <CircularProgress size={20} color="inherit" />
