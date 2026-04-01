@@ -93,13 +93,15 @@ export async function getPesapalToken(): Promise<string> {
   const consumer_secret = process.env.PESAPAL_CONSUMER_SECRET;
 
   if (!consumer_key || !consumer_secret) {
-    throw new Error('Pesapal credentials not configured. Set PESAPAL_CONSUMER_KEY and PESAPAL_CONSUMER_SECRET.');
+    throw new Error(
+      'Pesapal credentials not configured. Set PESAPAL_CONSUMER_KEY and PESAPAL_CONSUMER_SECRET.'
+    );
   }
 
   const response = await fetch(`${PESAPAL_BASE_URL}/api/Auth/RequestToken`, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ consumer_key, consumer_secret }),
@@ -129,9 +131,9 @@ export async function submitPesapalOrder(
   const response = await fetch(`${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
   });
@@ -162,8 +164,8 @@ export async function getPesapalTransactionStatus(
     {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
       },
     }
   );

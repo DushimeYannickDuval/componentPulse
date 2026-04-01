@@ -1,7 +1,15 @@
 import type { NextRequest } from 'next/server';
 
 import { NextResponse } from 'next/server';
-import { doc, query, where, getDocs, collection, updateDoc, serverTimestamp } from 'firebase/firestore';
+import {
+  doc,
+  query,
+  where,
+  getDocs,
+  collection,
+  updateDoc,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 import { FIRESTORE } from 'src/lib/firebase';
 import { getPesapalToken, getPesapalTransactionStatus } from 'src/lib/pesapal';
@@ -29,7 +37,11 @@ export async function GET(request: NextRequest) {
     const token = await getPesapalToken();
     const statusData = await getPesapalTransactionStatus(token, orderTrackingId);
 
-    console.log('Pesapal transaction status:', statusData.payment_status_description, merchantReference);
+    console.log(
+      'Pesapal transaction status:',
+      statusData.payment_status_description,
+      merchantReference
+    );
 
     // Find the matching order in Firestore by merchant_reference
     const ordersQ = query(

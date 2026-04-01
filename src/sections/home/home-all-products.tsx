@@ -13,11 +13,7 @@ import { RouterLink } from 'src/routes/components';
 import { useProducts } from 'src/hooks/firebase';
 
 import { Iconify } from 'src/components/iconify';
-import {
-  Carousel,
-  useCarousel,
-  CarouselDotButtons,
-} from 'src/components/carousel';
+import { Carousel, useCarousel, CarouselDotButtons } from 'src/components/carousel';
 
 import { ProductItem } from 'src/sections/shop/product-item';
 

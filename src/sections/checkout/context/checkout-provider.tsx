@@ -134,8 +134,7 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
 
       const targetStep = stepNumbers[type];
       const queryString = new URLSearchParams({ step: `${targetStep}` }).toString();
-      const redirectPath =
-        targetStep === 0 ? paths.checkout : `${paths.checkout}?${queryString}`;
+      const redirectPath = targetStep === 0 ? paths.checkout : `${paths.checkout}?${queryString}`;
 
       router.push(redirectPath);
     },
@@ -159,7 +158,7 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       }
 
       setField('items', updatedItems);
-      
+
       // Immediately update totals after adding to cart
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);
@@ -175,7 +174,7 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       const updatedItems = state.items.filter((item) => item.id !== itemId);
 
       setField('items', updatedItems);
-      
+
       // Update totals after deleting item
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);
@@ -196,7 +195,7 @@ function CheckoutContainer({ children }: CheckoutProviderProps) {
       });
 
       setField('items', updatedItems);
-      
+
       // Update totals after changing quantity
       const totalItems = updatedItems.reduce((total, item) => total + item.quantity, 0);
       const subtotal = updatedItems.reduce((total, item) => total + item.quantity * item.price, 0);

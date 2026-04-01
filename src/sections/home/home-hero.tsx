@@ -134,6 +134,7 @@ export function HomeHero() {
           options={carousel.options}
           slotProps={{
             prevBtn: {
+              sx: { ml: -2},
               svgIcon: (
                 <path
                   fill="none"
@@ -146,6 +147,7 @@ export function HomeHero() {
               ),
             },
             nextBtn: {
+              sx: { mr: -2},
               svgIcon: (
                 <path
                   fill="none"

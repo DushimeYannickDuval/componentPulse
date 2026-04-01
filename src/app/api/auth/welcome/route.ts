@@ -10,10 +10,7 @@ export async function POST(request: Request) {
     const { email, firstName } = body;
 
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
     const data = await resend.emails.send({
@@ -35,9 +32,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error('Error sending welcome email:', error);
-    return NextResponse.json(
-      { error: 'Failed to send welcome email' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to send welcome email' }, { status: 500 });
   }
 }

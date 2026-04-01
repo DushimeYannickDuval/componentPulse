@@ -76,7 +76,10 @@ export default function CheckoutCallbackPage() {
       const pendingOrderRaw = sessionStorage.getItem('pp_pending_order');
       if (!pendingOrderRaw) {
         setState('error');
-        setMessage('Order data not found. If payment was deducted, contact support with reference: ' + merchantReference);
+        setMessage(
+          'Order data not found. If payment was deducted, contact support with reference: ' +
+            merchantReference
+        );
         return;
       }
 
@@ -94,7 +97,10 @@ export default function CheckoutCallbackPage() {
       const result = await createOrder(orderData);
       if (!result) {
         setState('error');
-        setMessage('Payment received but order creation failed. Please contact support with reference: ' + merchantReference);
+        setMessage(
+          'Payment received but order creation failed. Please contact support with reference: ' +
+            merchantReference
+        );
         return;
       }
 
@@ -147,7 +153,7 @@ export default function CheckoutCallbackPage() {
       setState('error');
       setMessage(err.message || 'An unexpected error occurred. Please contact support.');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   useEffect(() => {

@@ -33,7 +33,14 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
-import { useCreateOrder, useUserProfile, useDeliveryZones, useValidateCoupon, usePickupLocations, useUpdatePaymentStatus } from 'src/hooks/firebase';
+import {
+  useCreateOrder,
+  useUserProfile,
+  useDeliveryZones,
+  useValidateCoupon,
+  usePickupLocations,
+  useUpdatePaymentStatus,
+} from 'src/hooks/firebase';
 
 import { fCurrency } from 'src/utils/format-number';
 
@@ -48,7 +55,12 @@ import { useCheckoutContext } from '../context';
 
 // ----------------------------------------------------------------------
 
-const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; description: string; icon: string }[] = [
+const PAYMENT_OPTIONS: {
+  value: PaymentMethod;
+  label: string;
+  description: string;
+  icon: string;
+}[] = [
   {
     value: 'pesapal',
     label: 'Pay Online',
@@ -71,7 +83,11 @@ export function CheckoutView() {
   const { createOrder, loading: creatingOrder, error: orderError } = useCreateOrder();
   const { updatePaymentStatus } = useUpdatePaymentStatus();
   const { zones, loading: zonesLoading } = useDeliveryZones(true); // active zones only
-  const { validateCoupon, incrementCouponUsage, validating: couponValidating } = useValidateCoupon();
+  const {
+    validateCoupon,
+    incrementCouponUsage,
+    validating: couponValidating,
+  } = useValidateCoupon();
 
   const [activeStep, setActiveStep] = useState(0);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -98,7 +114,13 @@ export function CheckoutView() {
 
   // Coupon state
   const [couponInput, setCouponInput] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState<{ id: string; code: string; type: 'percentage' | 'fixed'; value: number; minOrderAmount?: number } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    code: string;
+    type: 'percentage' | 'fixed';
+    value: number;
+    minOrderAmount?: number;
+  } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const savedAddresses = useMemo(() => profile?.addresses || [], [profile?.addresses]);
@@ -122,7 +144,7 @@ export function CheckoutView() {
 
   const selectedZone = zones.find((z) => z.id === selectedZoneId) ?? null;
   const shipping = deliveryMethod === 'delivery' ? (selectedZone?.fee ?? 0) : 0;
-  
+
   const { items, subtotal, discount: cartDiscount } = checkout.state;
 
   // Dynamic Component Level Coupon Computations preventing "Static Exploit" overlaps
@@ -139,7 +161,9 @@ export function CheckoutView() {
   useEffect(() => {
     if (appliedCoupon && appliedCoupon.minOrderAmount && subtotal < appliedCoupon.minOrderAmount) {
       setAppliedCoupon(null);
-      setCouponError(`Coupon removed: Minimum order amount of UGX ${appliedCoupon.minOrderAmount.toLocaleString()} required`);
+      setCouponError(
+        `Coupon removed: Minimum order amount of UGX ${appliedCoupon.minOrderAmount.toLocaleString()} required`
+      );
     }
   }, [subtotal, appliedCoupon]);
 
@@ -153,7 +177,11 @@ export function CheckoutView() {
   const checkValidationSilently = (): boolean => {
     if (!useNewAddress && savedAddresses.length > 0) {
       if (!selectedAddressId) return false;
-      if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) return false;
+      if (
+        !shippingInfo.email.trim() ||
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)
+      )
+        return false;
       return true;
     }
 
@@ -162,7 +190,11 @@ export function CheckoutView() {
 
     if (!shippingInfo.firstName.trim() || shippingInfo.firstName.trim().length < 2) return false;
     if (!shippingInfo.lastName.trim() || shippingInfo.lastName.trim().length < 2) return false;
-    if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) return false;
+    if (
+      !shippingInfo.email.trim() ||
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)
+    )
+      return false;
     if (!cleanPhone || !phoneRegex.test(cleanPhone)) return false;
     if (!shippingInfo.address.trim() || shippingInfo.address.trim().length < 5) return false;
     if (!shippingInfo.city.trim()) return false;
@@ -177,7 +209,10 @@ export function CheckoutView() {
         setError('Please select a delivery address');
         return false;
       }
-      if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) {
+      if (
+        !shippingInfo.email.trim() ||
+        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)
+      ) {
         setError('A valid email is required');
         return false;
       }
@@ -197,7 +232,10 @@ export function CheckoutView() {
       setError('Valid last name is required');
       return false;
     }
-    if (!shippingInfo.email.trim() || !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)) {
+    if (
+      !shippingInfo.email.trim() ||
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(shippingInfo.email)
+    ) {
       setError('A valid email address is required');
       return false;
     }
@@ -263,13 +301,13 @@ export function CheckoutView() {
       setAppliedCoupon(null);
       return;
     }
-    
-    setAppliedCoupon({ 
-      id: coupon.id, 
-      code: coupon.code, 
-      type: coupon.type, 
-      value: coupon.value, 
-      minOrderAmount: coupon.minOrderAmount 
+
+    setAppliedCoupon({
+      id: coupon.id,
+      code: coupon.code,
+      type: coupon.type,
+      value: coupon.value,
+      minOrderAmount: coupon.minOrderAmount,
     });
     setCouponError(null);
   };
@@ -290,28 +328,28 @@ export function CheckoutView() {
     // Build shipping address — conditionally include optional fields to avoid undefined
     const rawAddress = selectedAddr
       ? {
-        fullName: selectedAddr.fullName,
-        phone: selectedAddr.phone,
-        email: shippingInfo.email,
-        addressLine1: selectedAddr.addressLine1,
-        city: selectedAddr.city,
-        country: selectedAddr.country || 'Uganda',
-        ...(selectedAddr.addressLine2 ? { addressLine2: selectedAddr.addressLine2 } : {}),
-        ...(selectedAddr.district ? { district: selectedAddr.district } : {}),
-        ...((selectedAddr.deliveryInstructions || shippingInfo.notes)
-          ? { deliveryInstructions: selectedAddr.deliveryInstructions || shippingInfo.notes }
-          : {}),
-      }
+          fullName: selectedAddr.fullName,
+          phone: selectedAddr.phone,
+          email: shippingInfo.email,
+          addressLine1: selectedAddr.addressLine1,
+          city: selectedAddr.city,
+          country: selectedAddr.country || 'Uganda',
+          ...(selectedAddr.addressLine2 ? { addressLine2: selectedAddr.addressLine2 } : {}),
+          ...(selectedAddr.district ? { district: selectedAddr.district } : {}),
+          ...(selectedAddr.deliveryInstructions || shippingInfo.notes
+            ? { deliveryInstructions: selectedAddr.deliveryInstructions || shippingInfo.notes }
+            : {}),
+        }
       : {
-        fullName: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
-        phone: shippingInfo.phone,
-        email: shippingInfo.email,
-        addressLine1: shippingInfo.address,
-        city: shippingInfo.city,
-        country: 'Uganda',
-        ...(shippingInfo.district ? { district: shippingInfo.district } : {}),
-        ...(shippingInfo.notes ? { deliveryInstructions: shippingInfo.notes } : {}),
-      };
+          fullName: `${shippingInfo.firstName} ${shippingInfo.lastName}`,
+          phone: shippingInfo.phone,
+          email: shippingInfo.email,
+          addressLine1: shippingInfo.address,
+          city: shippingInfo.city,
+          country: 'Uganda',
+          ...(shippingInfo.district ? { district: shippingInfo.district } : {}),
+          ...(shippingInfo.notes ? { deliveryInstructions: shippingInfo.notes } : {}),
+        };
 
     const shippingAddress = stripUndefined(rawAddress);
 
@@ -338,8 +376,12 @@ export function CheckoutView() {
       ...(shippingInfo.notes ? { notes: shippingInfo.notes } : {}),
       ...(appliedCoupon ? { couponCode: appliedCoupon.code } : {}),
       deliveryMethod,
-      ...(selectedZone && deliveryMethod === 'delivery' ? { deliveryZoneId: selectedZone.id, deliveryZoneName: selectedZone.name } : {}),
-      ...(deliveryMethod === 'pickup' && selectedPickupId ? { pickupLocationId: selectedPickupId } : {}),
+      ...(selectedZone && deliveryMethod === 'delivery'
+        ? { deliveryZoneId: selectedZone.id, deliveryZoneName: selectedZone.name }
+        : {}),
+      ...(deliveryMethod === 'pickup' && selectedPickupId
+        ? { pickupLocationId: selectedPickupId }
+        : {}),
       ...(deliveryMethod === 'pickup' && pickupDate ? { pickupDate } : {}),
     };
   };
@@ -398,7 +440,9 @@ export function CheckoutView() {
 
         const currentStock = productSnap.data().stock ?? 0;
         if (currentStock < item.quantity) {
-          throw new Error(`Out of stock! "${item.name}" only has ${currentStock} item(s) available. Please adjust your cart.`);
+          throw new Error(
+            `Out of stock! "${item.name}" only has ${currentStock} item(s) available. Please adjust your cart.`
+          );
         }
       }
 
@@ -411,7 +455,9 @@ export function CheckoutView() {
           }
           await sendConfirmationEmail(result.orderNumber);
           checkout.onResetCart();
-          router.push(`/checkout/success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`);
+          router.push(
+            `/checkout/success?orderId=${result.orderId}&orderNumber=${result.orderNumber}`
+          );
         } else {
           setError(orderError || 'Failed to create order');
         }
@@ -473,19 +519,18 @@ export function CheckoutView() {
   if (isEmpty) {
     return (
       <Container maxWidth="lg" sx={{ py: 10, textAlign: 'center' }}>
-        <Iconify icon="solar:cart-large-2-bold-duotone" width={100} sx={{ color: 'text.disabled', mb: 3 }} />
+        <Iconify
+          icon="solar:cart-large-2-bold-duotone"
+          width={100}
+          sx={{ color: 'text.disabled', mb: 3 }}
+        />
         <Typography variant="h4" sx={{ mb: 2 }}>
           Your cart is empty
         </Typography>
         <Typography variant="body1" sx={{ color: 'text.secondary', mb: 4 }}>
           Add some products to your cart before checking out.
         </Typography>
-        <Button
-          component={RouterLink}
-          href={paths.products}
-          variant="contained"
-          size="large"
-        >
+        <Button component={RouterLink} href={paths.products} variant="contained" size="large">
           Continue Shopping
         </Button>
       </Container>
@@ -524,8 +569,12 @@ export function CheckoutView() {
                   p: 2,
                   cursor: 'pointer',
                   border: 2,
-                  borderColor: selectedAddressId === address.id && !useNewAddress ? 'primary.main' : 'divider',
-                  bgcolor: selectedAddressId === address.id && !useNewAddress ? 'primary.lighter' : 'transparent',
+                  borderColor:
+                    selectedAddressId === address.id && !useNewAddress ? 'primary.main' : 'divider',
+                  bgcolor:
+                    selectedAddressId === address.id && !useNewAddress
+                      ? 'primary.lighter'
+                      : 'transparent',
                   transition: 'all 0.2s',
                   '&:hover': {
                     borderColor: 'primary.light',
@@ -699,13 +748,19 @@ export function CheckoutView() {
         Delivery Options
       </Typography>
 
-      <Tabs
-        value={deliveryMethod}
-        onChange={(e, v) => setDeliveryMethod(v)}
-        sx={{ mb: 3 }}
-      >
-        <Tab label="Delivery" value="delivery" icon={<Iconify icon="solar:delivery-bold" />} iconPosition="start" />
-        <Tab label="Store Pick-up" value="pickup" icon={<Iconify icon="solar:shop-bold" />} iconPosition="start" />
+      <Tabs value={deliveryMethod} onChange={(e, v) => setDeliveryMethod(v)} sx={{ mb: 3 }}>
+        <Tab
+          label="Delivery"
+          value="delivery"
+          icon={<Iconify icon="solar:delivery-bold" />}
+          iconPosition="start"
+        />
+        <Tab
+          label="Store Pick-up"
+          value="pickup"
+          icon={<Iconify icon="solar:shop-bold" />}
+          iconPosition="start"
+        />
       </Tabs>
 
       {deliveryMethod === 'delivery' && (
@@ -801,7 +856,11 @@ export function CheckoutView() {
                         control={<Radio />}
                         label={
                           <Box sx={{ ml: 1 }}>
-                            <Stack direction="row" alignItems="center" justifyContent="space-between">
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              justifyContent="space-between"
+                            >
                               <Typography variant="subtitle1">{loc.name}</Typography>
                               <Typography variant="subtitle1" sx={{ color: 'primary.main' }}>
                                 FREE
@@ -899,13 +958,15 @@ export function CheckoutView() {
 
       {paymentMethod === 'pesapal' && (
         <Alert severity="info" sx={{ mt: 3 }}>
-          You will be redirected to Pesapal&apos;s secure payment page to complete your payment via Card, Mobile Money, or Bank Transfer.
+          You will be redirected to Pesapal&apos;s secure payment page to complete your payment via
+          Card, Mobile Money, or Bank Transfer.
         </Alert>
       )}
 
       {paymentMethod === 'cash_on_delivery' && (
         <Alert severity="warning" sx={{ mt: 3 }}>
-          Cash on Delivery is only available within Kampala. An additional UGX 5,000 handling fee may apply.
+          Cash on Delivery is only available within Kampala. An additional UGX 5,000 handling fee
+          may apply.
         </Alert>
       )}
     </Card>
@@ -922,7 +983,10 @@ export function CheckoutView() {
           <Stack key={item.id} direction="row" alignItems="center" spacing={2}>
             <Box
               component="img"
-              src={item.coverUrl || 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=80&q=80'}
+              src={
+                item.coverUrl ||
+                'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=80&q=80'
+              }
               alt={item.name}
               sx={{ width: 56, height: 56, borderRadius: 1, objectFit: 'cover' }}
             />
@@ -942,9 +1006,7 @@ export function CheckoutView() {
                 Qty: {item.quantity}
               </Typography>
             </Box>
-            <Typography variant="body2">
-              {fCurrency(item.price * item.quantity)}
-            </Typography>
+            <Typography variant="body2">{fCurrency(item.price * item.quantity)}</Typography>
           </Stack>
         ))}
       </Stack>
@@ -1001,9 +1063,7 @@ export function CheckoutView() {
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
             Shipping
           </Typography>
-          <Typography variant="body2">
-            {shipping === 0 ? 'FREE' : fCurrency(shipping)}
-          </Typography>
+          <Typography variant="body2">{shipping === 0 ? 'FREE' : fCurrency(shipping)}</Typography>
         </Stack>
 
         {discount > 0 && (
@@ -1058,7 +1118,11 @@ export function CheckoutView() {
 
             {!authenticated && activeStep === steps.length - 1 && (
               <Alert severity="warning" sx={{ mt: 2 }}>
-                Please <RouterLink href={paths.auth.firebase.signIn} style={{ fontWeight: 'bold' }}>sign in</RouterLink> to complete your order.
+                Please{' '}
+                <RouterLink href={paths.auth.firebase.signIn} style={{ fontWeight: 'bold' }}>
+                  sign in
+                </RouterLink>{' '}
+                to complete your order.
               </Alert>
             )}
 
@@ -1075,7 +1139,9 @@ export function CheckoutView() {
               <Button
                 variant="contained"
                 onClick={handleNext}
-                disabled={loading || creatingOrder || (activeStep === 0 && !checkValidationSilently())}
+                disabled={
+                  loading || creatingOrder || (activeStep === 0 && !checkValidationSilently())
+                }
                 endIcon={
                   loading || creatingOrder ? (
                     <CircularProgress size={20} color="inherit" />
@@ -1095,9 +1161,7 @@ export function CheckoutView() {
             </Stack>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 4 }}>
-            {renderOrderSummary()}
-          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>{renderOrderSummary()}</Grid>
         </Grid>
       </Container>
     </Box>

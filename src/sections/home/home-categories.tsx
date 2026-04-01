@@ -18,7 +18,12 @@ import { Image } from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
 import { alpha } from '@mui/material';
 
-import { Carousel, useCarousel, CarouselDotButtons, CarouselArrowBasicButtons } from 'src/components/carousel';
+import {
+  Carousel,
+  useCarousel,
+  CarouselDotButtons,
+  CarouselArrowBasicButtons,
+} from 'src/components/carousel';
 
 // ----------------------------------------------------------------------
 

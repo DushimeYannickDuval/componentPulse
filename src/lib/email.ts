@@ -114,12 +114,16 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
               <span>Delivery:</span>
               <span>${data.deliveryFee === 0 ? 'FREE' : formatCurrency(data.deliveryFee)}</span>
             </div>
-            ${data.discount > 0 ? `
+            ${
+              data.discount > 0
+                ? `
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #d32f2f;">
               <span>Discount:</span>
               <span>-${formatCurrency(data.discount)}</span>
             </div>
-            ` : ''}
+            `
+                : ''
+            }
             <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
               <span>Total:</span>
               <span style="color: #1976d2;">${formatCurrency(data.total)}</span>
@@ -212,7 +216,8 @@ export async function sendOrderStatusUpdateEmail(
       },
       cancelled: {
         label: 'Cancelled',
-        description: 'Your order has been cancelled. If you have any questions, please contact support.',
+        description:
+          'Your order has been cancelled. If you have any questions, please contact support.',
         color: '#f44336',
       },
     };
@@ -336,7 +341,6 @@ export async function sendTicketReplyEmail(
   }
 }
 
-
 // ----------------------------------------------------------------------
 
 export async function sendTicketConfirmationEmail(
@@ -405,7 +409,10 @@ export async function sendTrainingUpdateEmail(
     return false;
   }
 
-  const updateConfig: Record<TrainingUpdateType, { subject: string; heading: string; description: string; color: string; buttonLabel: string }> = {
+  const updateConfig: Record<
+    TrainingUpdateType,
+    { subject: string; heading: string; description: string; color: string; buttonLabel: string }
+  > = {
     launched: {
       subject: `🚀 "${moduleTitle}" is now live!`,
       heading: 'Your training module is now live!',
@@ -506,15 +513,15 @@ export async function sendProductReviewRequestEmail(
 
         <div style="margin: 30px 0;">
           ${items
-      .map(
-        (item) => `
+            .map(
+              (item) => `
             <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
               <span style="font-weight: 500;">${item.name}</span>
               <a href="${process.env.NEXT_PUBLIC_APP_URL}/products/${item.id}" style="background: #1976d2; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 14px;">Leave Review</a>
             </div>
           `
-      )
-      .join('')}
+            )
+            .join('')}
         </div>
 
         <p>Thank you for shopping with ComponentPulse!</p>
