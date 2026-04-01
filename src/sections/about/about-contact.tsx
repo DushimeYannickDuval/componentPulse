@@ -65,10 +65,10 @@ export function AboutContact() {
                         <Card sx={{ p: 5, textAlign: 'center', height: '100%', display: 'flex', flexDirection: 'column' }}>
                             <Iconify icon="solar:letter-bold-duotone" width={48} sx={{ color: 'warning.main', mx: 'auto', mb: 3 }} />
                             <Typography variant="h6" sx={{ mb: 1 }}>Email Us</Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>componentpulse@gmail.com</Typography>
-                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, flexGrow: 1 }}>support@componentPulse.ug</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>info@componentpulseug.com</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, flexGrow: 1 }}>support@componentpulseug.com</Typography>
 
-                            <Button href="mailto:support@componentPulse.ug" variant="outlined" color="inherit">
+                            <Button href="mailto:support@componentpulseug.com" variant="outlined" color="inherit">
                                 Email Us for Support
                             </Button>
                         </Card>

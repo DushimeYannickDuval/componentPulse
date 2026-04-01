@@ -102,7 +102,7 @@ function SupportContactInfo() {
     // Fallbacks
     const defaultWhatsApp = '+256 790 270 840';
     const defaultPhone = '+256 790 270 840';
-    const defaultEmail = 'componentpulse@gmail.com';
+    const defaultEmail = 'support@componentpulseug.com';
 
     // Resolved Values
     const whatsappStr = settings?.socialLinks?.whatsapp || defaultWhatsApp;

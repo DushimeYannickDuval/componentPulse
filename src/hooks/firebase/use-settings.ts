@@ -67,7 +67,7 @@ const COLLECTION = 'settings';
 
 const DEFAULT_SETTINGS: StoreSettings = {
   storeName: 'Component Pulse',
-  storeEmail: 'info@componentpulse.com',
+  storeEmail: 'info@componentpulseug.com',
   storePhone: '+256 700 000 000',
   storeAddress: 'Kampala, Uganda',
   currency: 'UGX',
@@ -79,7 +79,7 @@ const DEFAULT_SETTINGS: StoreSettings = {
   minOrderAmount: 10000,
   maxOrderAmount: 10000000,
   orderPrefix: 'CP',
-  orderNotificationEmail: 'orders@componentpulse.com',
+  orderNotificationEmail: 'orders@componentpulseug.com',
   lowStockThreshold: 10,
   lowStockNotification: true,
   socialLinks: {},

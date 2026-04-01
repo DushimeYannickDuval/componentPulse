@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const data = await resend.emails.send({
-      from: 'Welcome <onboarding@resend.dev>', // Update with your verified domain
+      from: 'Welcome <onboarding@componentpulseug.com>',
       to: [email],
       subject: 'Welcome to Component Pulse!',
       html: `

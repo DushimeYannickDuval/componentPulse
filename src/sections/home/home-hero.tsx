@@ -215,8 +215,27 @@ export function CarouselItem({ slide, selected }: CarouselItemProps) {
           WebkitBackdropFilter: 'blur(20px)',
           border: `1px solid ${varAlpha(theme.vars.palette.common.whiteChannel, 0.1)}`,
           boxShadow: theme.customShadows.z24,
+          // Mobile: Include image inside the card
+          display: 'flex',
+          flexDirection: 'column',
+          gap: { xs: 3, md: 0 },
         })}
       >
+        {/* Image inside card on mobile only */}
+        <Box
+          component="img"
+          alt={slide.name}
+          src={slide.coverUrl}
+          sx={(theme) => ({
+            display: { xs: 'block', md: 'none' },
+            width: '100%',
+            height: 240,
+            objectFit: 'cover',
+            borderRadius: 2,
+            mb: 2,
+          })}
+        />
+
         <Label variant="filled" color="warning" sx={{ mb: 2 }}>
           {slide.label}
         </Label>
@@ -265,13 +284,15 @@ export function CarouselItem({ slide, selected }: CarouselItemProps) {
         </Button>
       </Box>
 
+      {/* Image outside card on desktop only */}
       <Box
         component="img"
         alt={slide.name}
         src={slide.coverUrl}
         sx={(theme) => ({
-          width: { xs: 280, md: 480 },
-          height: { xs: 280, md: 480 },
+          display: { xs: 'none', md: 'block' },
+          width: 480,
+          height: 480,
           objectFit: 'cover',
           borderRadius: 4,
           filter: `drop-shadow(0 20px 40px ${varAlpha(theme.vars.palette.common.blackChannel, 0.8)})`,

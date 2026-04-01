@@ -556,8 +556,8 @@ export function MainLayout({
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Iconify icon="solar:letter-bold" sx={{ color: 'primary.main' }} />
-                <Link href="mailto:info@componentpulse.com" color="grey.400" underline="hover" sx={{ typography: 'body2' }}>
-                  info@componentpulse.com
+                <Link href="mailto:info@componentpulseug.com" color="grey.400" underline="hover" sx={{ typography: 'body2' }}>
+                  info@componentpulseug.com
                 </Link>
               </Box>
             </Stack>

@@ -7,7 +7,7 @@ const RESEND_API_KEY = process.env.RESEND_API_KEY;
 // Only initialize Resend if API key is available
 const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
-const FROM_EMAIL = 'ComponentPulse <orders@componentpulse.com>';
+const FROM_EMAIL = 'ComponentPulse <orders@componentpulseug.com>';
 
 // ----------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
           </div>
 
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>If you have any questions, contact us at support@componentpulse.com</p>
+            <p>If you have any questions, contact us at support@componentpulseug.com</p>
             <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
           </div>
         </body>
@@ -252,7 +252,7 @@ export async function sendOrderStatusUpdateEmail(
           </div>
 
           <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>If you have any questions, contact us at support@componentpulse.com</p>
+            <p>If you have any questions, contact us at support@componentpulseug.com</p>
             <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
           </div>
         </body>
@@ -461,7 +461,7 @@ export async function sendTrainingUpdateEmail(
 
         <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
           <p>You received this email because you subscribed to updates for this training module.</p>
-          <p>If you have any questions, contact us at <a href="mailto:support@componentpulse.com" style="color: #1976d2;">support@componentpulse.com</a></p>
+          <p>If you have any questions, contact us at <a href="mailto:support@componentpulseug.com" style="color: #1976d2;">support@componentpulseug.com</a></p>
           <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
         </div>
       </body>
