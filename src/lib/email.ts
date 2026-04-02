@@ -52,6 +52,12 @@ function getPaymentMethodLabel(method: string): string {
 
 // ----------------------------------------------------------------------
 
+export function buildEmailLayout(content: string): string {
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;padding:0;background:#f0fdf4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#f0fdf4;padding:40px 16px;"><tr><td align="center"><table cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,167,111,0.10);"><tr><td style="background:#00A76F;padding:28px 40px;text-align:center;"><span style="color:#ffffff;font-size:22px;font-weight:700;letter-spacing:0.5px;">ComponentPulse</span></td></tr><tr><td style="padding:40px;">${content}</td></tr><tr><td style="background:#f9fafb;padding:24px 40px;text-align:center;border-top:1px solid #e5e7eb;"><p style="margin:0 0 6px;color:#6b7280;font-size:13px;">Questions? <a href="mailto:support@componentpulseug.com" style="color:#00A76F;text-decoration:none;">support@componentpulseug.com</a></p><p style="margin:0;color:#9ca3af;font-size:12px;">&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p></td></tr></table></td></tr></table></body></html>`;
+}
+
+// ----------------------------------------------------------------------
+
 export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<boolean> {
   if (!resend) {
     console.warn('Resend API key not configured. Skipping email.');
@@ -72,92 +78,43 @@ export async function sendOrderConfirmationEmail(data: OrderEmailData): Promise<
       )
       .join('');
 
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #1976d2; margin: 0;">ComponentPulse</h1>
-            <p style="color: #666; margin: 5px 0 0;">Your order has been confirmed!</p>
-          </div>
-
-          <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-            <h2 style="margin: 0 0 10px; font-size: 18px;">Order #${data.orderNumber}</h2>
-            <p style="margin: 0; color: #666;">Thank you for your order, ${data.customerName}!</p>
-          </div>
-
-          <h3 style="border-bottom: 2px solid #1976d2; padding-bottom: 10px;">Order Details</h3>
-          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <thead>
-              <tr style="background: #f8f9fa;">
-                <th style="padding: 12px; text-align: left;">Product</th>
-                <th style="padding: 12px; text-align: center;">Qty</th>
-                <th style="padding: 12px; text-align: right;">Price</th>
-                <th style="padding: 12px; text-align: right;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${itemsHtml}
-            </tbody>
-          </table>
-
-          <div style="background: #f8f9fa; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span>Subtotal:</span>
-              <span>${formatCurrency(data.subtotal)}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-              <span>Delivery:</span>
-              <span>${data.deliveryFee === 0 ? 'FREE' : formatCurrency(data.deliveryFee)}</span>
-            </div>
-            ${
-              data.discount > 0
-                ? `
-            <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #d32f2f;">
-              <span>Discount:</span>
-              <span>-${formatCurrency(data.discount)}</span>
-            </div>
-            `
-                : ''
-            }
-            <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
-              <span>Total:</span>
-              <span style="color: #1976d2;">${formatCurrency(data.total)}</span>
-            </div>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-            <div>
-              <h3 style="margin: 0 0 10px; font-size: 16px;">Shipping Address</h3>
-              <p style="margin: 0; color: #666;">
-                ${data.shippingAddress.fullName}<br>
-                ${data.shippingAddress.addressLine1}<br>
-                ${data.shippingAddress.city}<br>
-                ${data.shippingAddress.phone}
-              </p>
-            </div>
-            <div>
-              <h3 style="margin: 0 0 10px; font-size: 16px;">Payment Method</h3>
-              <p style="margin: 0; color: #666;">${getPaymentMethodLabel(data.paymentMethod)}</p>
-            </div>
-          </div>
-
-          <div style="text-align: center; padding: 20px; background: #1976d2; color: white; border-radius: 8px;">
-            <p style="margin: 0 0 10px;">Track your order status in your account</p>
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/account/orders" style="display: inline-block; background: white; color: #1976d2; padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Order</a>
-          </div>
-
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>If you have any questions, contact us at support@componentpulseug.com</p>
-            <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `;
+    const html = buildEmailLayout(`
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">Order Confirmed!</h2>
+      <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Thank you, ${data.customerName}! Your order has been received and is being processed.</p>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
+        <p style="margin:0;color:#374151;font-size:14px;"><strong>Order #${data.orderNumber}</strong></p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+        <thead><tr style="background:#f9fafb;">
+          <th style="padding:10px 8px;text-align:left;font-size:13px;color:#374151;border-bottom:2px solid #e5e7eb;">Product</th>
+          <th style="padding:10px 8px;text-align:center;font-size:13px;color:#374151;border-bottom:2px solid #e5e7eb;">Qty</th>
+          <th style="padding:10px 8px;text-align:right;font-size:13px;color:#374151;border-bottom:2px solid #e5e7eb;">Price</th>
+          <th style="padding:10px 8px;text-align:right;font-size:13px;color:#374151;border-bottom:2px solid #e5e7eb;">Total</th>
+        </tr></thead>
+        <tbody>${itemsHtml}</tbody>
+      </table>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+        <tr style="background:#f9fafb;"><td style="padding:10px 16px;color:#6b7280;font-size:14px;border-radius:8px 8px 0 0;">Subtotal</td><td style="padding:10px 16px;text-align:right;font-size:14px;color:#374151;">${formatCurrency(data.subtotal)}</td></tr>
+        <tr style="background:#f9fafb;"><td style="padding:10px 16px;color:#6b7280;font-size:14px;">Delivery</td><td style="padding:10px 16px;text-align:right;font-size:14px;color:#374151;">${data.deliveryFee === 0 ? 'FREE' : formatCurrency(data.deliveryFee)}</td></tr>
+        ${data.discount > 0 ? `<tr style="background:#f9fafb;"><td style="padding:10px 16px;color:#d32f2f;font-size:14px;">Discount</td><td style="padding:10px 16px;text-align:right;font-size:14px;color:#d32f2f;">-${formatCurrency(data.discount)}</td></tr>` : ''}
+        <tr style="border-top:2px solid #e5e7eb;"><td style="padding:12px 16px;font-weight:700;font-size:16px;color:#111827;">Total</td><td style="padding:12px 16px;text-align:right;font-weight:700;font-size:16px;color:#00A76F;">${formatCurrency(data.total)}</td></tr>
+      </table>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:28px;">
+        <tr>
+          <td style="vertical-align:top;padding-right:16px;width:50%;">
+            <p style="margin:0 0 8px;font-weight:600;font-size:14px;color:#111827;">Shipping Address</p>
+            <p style="margin:0;color:#6b7280;font-size:14px;line-height:1.6;">${data.shippingAddress.fullName}<br>${data.shippingAddress.addressLine1}<br>${data.shippingAddress.city}<br>${data.shippingAddress.phone}</p>
+          </td>
+          <td style="vertical-align:top;width:50%;">
+            <p style="margin:0 0 8px;font-weight:600;font-size:14px;color:#111827;">Payment Method</p>
+            <p style="margin:0;color:#6b7280;font-size:14px;">${getPaymentMethodLabel(data.paymentMethod)}</p>
+          </td>
+        </tr>
+      </table>
+      <div style="text-align:center;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/account/orders" style="display:inline-block;background:#00A76F;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">View Your Order</a>
+      </div>
+    `);
 
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -228,41 +185,20 @@ export async function sendOrderStatusUpdateEmail(
       color: '#666',
     };
 
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #1976d2; margin: 0;">ComponentPulse</h1>
-          </div>
-
-          <div style="text-align: center; margin-bottom: 30px;">
-            <div style="display: inline-block; background: ${statusInfo.color}; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold;">
-              ${statusInfo.label}
-            </div>
-          </div>
-
-          <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px; text-align: center;">
-            <h2 style="margin: 0 0 10px;">Order #${orderNumber}</h2>
-            <p style="margin: 0; color: #666;">Hi ${customerName}, ${statusInfo.description}</p>
-            ${statusNote ? `<p style="margin: 10px 0 0; color: #666; font-style: italic;">"${statusNote}"</p>` : ''}
-          </div>
-
-          <div style="text-align: center; margin-bottom: 20px;">
-            <a href="${process.env.NEXT_PUBLIC_APP_URL}/account/orders" style="display: inline-block; background: #1976d2; color: white; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">Track Your Order</a>
-          </div>
-
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>If you have any questions, contact us at support@componentpulseug.com</p>
-            <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `;
+    const html = buildEmailLayout(`
+      <h2 style="margin:0 0 20px;font-size:22px;font-weight:700;color:#111827;text-align:center;">Order Status Update</h2>
+      <div style="text-align:center;margin-bottom:24px;">
+        <span style="display:inline-block;background:${statusInfo.color};color:#ffffff;padding:8px 20px;border-radius:20px;font-weight:600;font-size:14px;">${statusInfo.label}</span>
+      </div>
+      <div style="background:#f9fafb;border-radius:8px;padding:20px;margin-bottom:28px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:18px;font-weight:600;color:#111827;">Order #${orderNumber}</p>
+        <p style="margin:0;color:#6b7280;font-size:15px;">Hi ${customerName}, ${statusInfo.description}</p>
+        ${statusNote ? `<p style="margin:12px 0 0;color:#6b7280;font-size:14px;font-style:italic;">"${statusNote}"</p>` : ''}
+      </div>
+      <div style="text-align:center;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL}/account/orders" style="display:inline-block;background:#00A76F;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Track Your Order</a>
+      </div>
+    `);
 
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -294,38 +230,20 @@ export async function sendTicketReplyEmail(
   }
 
   try {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #1976d2; margin: 0;">ComponentPulse Support</h1>
-          </div>
-
-          <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-            <h2 style="margin: 0 0 10px; font-size: 18px;">Update on Ticket ${ticketNumber}</h2>
-            <p style="margin: 0 0 15px; color: #666;">Hi ${customerName}, support has replied to your ticket "<strong>${ticketSubject}</strong>":</p>
-            
-            <div style="background: #fff; border-left: 4px solid #1976d2; padding: 15px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-              <p style="margin: 0; white-space: pre-wrap;">${replyContent}</p>
-            </div>
-          </div>
-
-          <div style="text-align: center; margin-bottom: 20px;">
-            <a href="${ticketUrl}" style="display: inline-block; background: #1976d2; color: white; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: bold;">View Ticket & Reply</a>
-          </div>
-
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>If you have any questions, you can reply directly on the ticket page.</p>
-            <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `;
+    const html = buildEmailLayout(`
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">Support Reply</h2>
+      <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Hi ${customerName}, our support team has replied to your ticket.</p>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-bottom:20px;">
+        <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Ticket: ${ticketNumber}</p>
+        <p style="margin:0;font-weight:600;color:#111827;font-size:15px;">${ticketSubject}</p>
+      </div>
+      <div style="background:#f9fafb;border-left:4px solid #00A76F;padding:16px 20px;border-radius:0 4px 4px 0;margin-bottom:28px;">
+        <p style="margin:0;color:#374151;font-size:15px;white-space:pre-wrap;line-height:1.6;">${replyContent}</p>
+      </div>
+      <div style="text-align:center;">
+        <a href="${ticketUrl}" style="display:inline-block;background:#00A76F;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">View Ticket &amp; Reply</a>
+      </div>
+    `);
 
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -354,30 +272,15 @@ export async function sendTicketConfirmationEmail(
   }
 
   try {
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        </head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1 style="color: #1976d2; margin: 0;">ComponentPulse Support</h1>
-          </div>
-
-          <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-            <h2 style="margin: 0 0 10px; font-size: 18px;">Request Received</h2>
-            <p style="margin: 0 0 15px; color: #666;">Hi ${customerName}, we've received your message regarding "<strong>${ticketSubject}</strong>".</p>
-            <p style="margin: 0 0 15px; color: #666;">Our support team is reviewing your request and will get back to you as soon as possible!</p>
-          </div>
-
-          <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-            <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
-          </div>
-        </body>
-      </html>
-    `;
+    const html = buildEmailLayout(`
+      <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">We've Received Your Request</h2>
+      <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Hi ${customerName}, your support request has been successfully submitted.</p>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
+        <p style="margin:0 0 4px;font-size:13px;color:#6b7280;">Subject</p>
+        <p style="margin:0;font-weight:600;color:#111827;font-size:15px;">${ticketSubject}</p>
+      </div>
+      <p style="color:#6b7280;font-size:15px;margin:0 0 8px;line-height:1.6;">Our support team is reviewing your request and will get back to you as soon as possible.</p>
+    `);
 
     await resend.emails.send({
       from: FROM_EMAIL,
@@ -438,42 +341,22 @@ export async function sendTrainingUpdateEmail(
 
   const config = updateConfig[updateType];
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      </head>
-      <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #1976d2; margin: 0;">ComponentPulse</h1>
-          <p style="color: #666; margin: 5px 0 0;">Training & Education</p>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 24px;">
-          <div style="display: inline-block; background: ${config.color}; color: white; padding: 10px 24px; border-radius: 20px; font-weight: bold; font-size: 16px;">
-            ${config.heading}
-          </div>
-        </div>
-
-        <div style="background: #f8f9fa; border-radius: 8px; padding: 24px; margin-bottom: 24px;">
-          <p style="margin: 0 0 8px; color: #444;">Hi ${recipientName || 'there'},</p>
-          <p style="margin: 0; color: #666;">${config.description}</p>
-        </div>
-
-        <div style="text-align: center; margin-bottom: 28px;">
-          <a href="${moduleUrl}" style="display: inline-block; background: ${config.color}; color: white; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 16px;">${config.buttonLabel}</a>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-          <p>You received this email because you subscribed to updates for this training module.</p>
-          <p>If you have any questions, contact us at <a href="mailto:support@componentpulseug.com" style="color: #1976d2;">support@componentpulseug.com</a></p>
-          <p>&copy; ${new Date().getFullYear()} ComponentPulse. All rights reserved.</p>
-        </div>
-      </body>
-    </html>
-  `;
+  const html = buildEmailLayout(`
+    <div style="text-align:center;margin-bottom:20px;">
+      <span style="display:inline-block;background:${config.color};color:#ffffff;padding:7px 18px;border-radius:20px;font-weight:600;font-size:13px;">${config.heading}</span>
+    </div>
+    <div style="background:#f9fafb;border-radius:8px;padding:24px;margin-bottom:20px;">
+      <p style="margin:0 0 12px;color:#374151;font-size:15px;">Hi ${recipientName || 'there'},</p>
+      <p style="margin:0;color:#6b7280;font-size:15px;line-height:1.6;">${config.description}</p>
+    </div>
+    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 18px;margin-bottom:28px;">
+      <p style="margin:0;font-size:14px;color:#374151;"><strong>Module:</strong> ${moduleTitle}</p>
+    </div>
+    <div style="text-align:center;">
+      <a href="${moduleUrl}" style="display:inline-block;background:#00A76F;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">${config.buttonLabel}</a>
+    </div>
+    <p style="margin:24px 0 0;color:#9ca3af;font-size:13px;text-align:center;">You received this email because you subscribed to updates for this training module.</p>
+  `);
 
   try {
     await resend.emails.send({
@@ -497,37 +380,22 @@ export async function sendProductReviewRequestEmail(
 ): Promise<boolean> {
   if (!resend) return false;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head><meta charset="utf-8"></head>
-      <body style="font-family: sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="color: #1976d2; margin: 0;">ComponentPulse</h1>
-          <p style="color: #666;">How did we do?</p>
+  const html = buildEmailLayout(`
+    <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">How did we do?</h2>
+    <p style="margin:0 0 8px;color:#6b7280;font-size:15px;">Hi ${customerName},</p>
+    <p style="margin:0 0 24px;color:#6b7280;font-size:15px;">Your order <strong style="color:#111827;">#${orderNumber}</strong> has been delivered! We hope you love your new components. Could you take a moment to share your feedback?</p>
+    <div style="margin-bottom:28px;">
+      ${items.map((item) => `
+        <div style="margin-bottom:12px;padding:14px 16px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;">
+          <table style="width:100%;border-collapse:collapse;"><tr>
+            <td style="vertical-align:middle;font-weight:500;color:#374151;font-size:14px;">${item.name}</td>
+            <td style="vertical-align:middle;text-align:right;"><a href="${process.env.NEXT_PUBLIC_APP_URL}/products/${item.id}" style="display:inline-block;background:#00A76F;color:#ffffff;text-decoration:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;">Leave Review</a></td>
+          </tr></table>
         </div>
-
-        <p>Hi ${customerName},</p>
-        <p>Your order <strong>#${orderNumber}</strong> has been delivered! We hope you love your new components.</p>
-        <p>Could you take a minute to review the items you bought? Your feedback helps other engineers make better choices!</p>
-
-        <div style="margin: 30px 0;">
-          ${items
-            .map(
-              (item) => `
-            <div style="margin-bottom: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-weight: 500;">${item.name}</span>
-              <a href="${process.env.NEXT_PUBLIC_APP_URL}/products/${item.id}" style="background: #1976d2; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 4px; font-size: 14px;">Leave Review</a>
-            </div>
-          `
-            )
-            .join('')}
-        </div>
-
-        <p>Thank you for shopping with ComponentPulse!</p>
-      </body>
-    </html>
-  `;
+      `).join('')}
+    </div>
+    <p style="margin:0;color:#6b7280;font-size:14px;text-align:center;">Thank you for shopping with ComponentPulse!</p>
+  `);
 
   try {
     await resend.emails.send({

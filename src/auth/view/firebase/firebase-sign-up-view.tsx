@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useBoolean } from 'minimal-shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { fetchSignInMethodsForEmail } from 'firebase/auth';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -17,6 +18,8 @@ import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
+import { AUTH } from 'src/lib/firebase';
+
 import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaUtils } from 'src/components/hook-form';
 
@@ -27,8 +30,6 @@ import { FormDivider } from '../../components/form-divider';
 import { FormSocials } from '../../components/form-socials';
 import { SignUpTerms } from '../../components/sign-up-terms';
 import { signUp, signInWithGoogle } from '../../context/firebase';
-import { fetchSignInMethodsForEmail } from 'firebase/auth';
-import { AUTH } from 'src/lib/firebase';
 
 // ----------------------------------------------------------------------
 

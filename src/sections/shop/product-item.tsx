@@ -2,7 +2,8 @@
 
 import type { Product } from 'src/types/product';
 
-import Fab from '@mui/material/Fab';
+import { toast } from 'sonner';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -10,8 +11,6 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-
-import { toast } from 'sonner';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';

@@ -1,8 +1,8 @@
 'use client';
 
 import * as z from 'zod';
-import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { applyActionCode, confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
@@ -17,12 +17,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
 import { useRouter, useSearchParams } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
 
 import { AUTH } from 'src/lib/firebase';
+import { SentIcon, PasswordIcon } from 'src/assets/icons';
+
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
-import { SentIcon, PasswordIcon } from 'src/assets/icons';
 
 import { getErrorMessage } from '../../utils';
 import { FormHead } from '../../components/form-head';

@@ -17,12 +17,12 @@ import { RouterLink } from 'src/routes/components';
 import { useProduct } from 'src/hooks/firebase';
 
 import { Iconify } from 'src/components/iconify';
+import { Markdown } from 'src/components/markdown';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { ProductReviews } from '../product-reviews';
 import { ProductDetailsInfo } from '../product-details-info';
 import { ProductDetailsCarousel } from '../product-details-carousel';
-import { Markdown } from 'src/components/markdown';
 
 // ----------------------------------------------------------------------
 

@@ -44,12 +44,10 @@ export function ProductFilters({
   categories,
 }: Props) {
   // Accept both slug and id for matching to sync perfectly with URL
-  const isCategorySelected = (category: { id: string; slug?: string }) => {
-    return (
+  const isCategorySelected = (category: { id: string; slug?: string }) => (
       filters.categories.includes(category.id) ||
       (category.slug && filters.categories.includes(category.slug))
     );
-  };
 
   const handleCategoryChange = (category: { id: string; slug?: string }) => {
     // Prefer slug if available for cleaner URLs, fallback to ID

@@ -1,15 +1,16 @@
 import type { ButtonProps } from '@mui/material/Button';
 
 import { useCallback } from 'react';
+import { useBoolean } from 'minimal-shared/hooks';
 
 import Button from '@mui/material/Button';
 
 import { useRouter } from 'src/routes/hooks';
-import { useBoolean } from 'minimal-shared/hooks';
+
+import { ConfirmDialog } from 'src/components/custom-dialog';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { signOut } from 'src/auth/context/firebase/action';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 
 // ----------------------------------------------------------------------
 

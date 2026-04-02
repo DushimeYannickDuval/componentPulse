@@ -1,5 +1,6 @@
 import type { Product } from 'src/types/product';
 
+import { toast } from 'sonner';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
@@ -12,19 +13,17 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import { inputBaseClasses } from '@mui/material/InputBase';
 
-import { toast } from 'sonner';
-
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
+import { useGetApprovedReviews } from 'src/hooks/firebase/use-reviews';
+
 import { fCurrency } from 'src/utils/format-number';
 
-import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { Markdown } from 'src/components/markdown';
 
 import { useCheckoutContext } from 'src/sections/checkout/context';
-import { useGetApprovedReviews } from 'src/hooks/firebase/use-reviews';
 
 // ----------------------------------------------------------------------
 

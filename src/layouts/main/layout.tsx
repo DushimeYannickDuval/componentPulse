@@ -24,14 +24,15 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import ListItemButton from '@mui/material/ListItemButton';
 
 import { paths } from 'src/routes/paths';
-import { usePathname, useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
+import { useRouter, usePathname } from 'src/routes/hooks';
 
-import { useNewsletter, useGetNotifications, useCategories } from 'src/hooks/firebase';
+import { useNewsletter, useCategories, useGetNotifications } from 'src/hooks/firebase';
 
 import { Logo } from 'src/components/logo';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
+import { CustomPopover } from 'src/components/custom-popover';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -42,7 +43,6 @@ import { SettingsButton } from '../components/settings-button';
 import { _account, _adminAccount } from '../nav-config-account';
 import { MainSection, LayoutSection, HeaderSection } from '../core';
 import { NotificationsDrawer } from '../components/notifications-drawer';
-import { CustomPopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 

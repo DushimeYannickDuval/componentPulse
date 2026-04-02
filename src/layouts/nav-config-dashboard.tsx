@@ -141,6 +141,7 @@ export const navData: NavSectionProps['data'] = [
       { title: 'Coupons', path: paths.admin.coupons, icon: ICONS.invoice },
       { title: 'Admin Users', path: paths.admin.users.root, icon: ICONS.lock },
       { title: 'Settings', path: paths.admin.settings, icon: ICONS.params },
+      { title: 'Email Testing', path: paths.admin.emailTest, icon: ICONS.mail },
     ],
   },
 ];

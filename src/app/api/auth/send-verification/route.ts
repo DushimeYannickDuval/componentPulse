@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { NextResponse } from 'next/server';
+
+import { buildEmailLayout } from 'src/lib/email';
 import { adminAuth } from 'src/lib/firebase-admin';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
@@ -31,36 +33,18 @@ export async function POST(request: Request) {
       from: 'Component Pulse <onboarding@componentpulseug.com>',
       to: [email],
       subject: 'Verify your email address - Component Pulse',
-      html: `
-        <div style="font-family: 'Inter', Arial, sans-serif; max-width: 600px; margin: 40px auto; padding: 32px; border: 1px solid #eaeaea; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-          <div style="text-align: center; margin-bottom: 24px;">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-          </div>
-          <h1 style="color: #111827; text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 16px;">Verify your email</h1>
-          <p style="color: #4b5563; font-size: 16px; line-height: 24px; text-align: center;">
-            Hello ${firstName || 'User'},
-          </p>
-          <p style="color: #4b5563; font-size: 16px; line-height: 24px; text-align: center; margin-bottom: 32px;">
-            Thank you for registering with Component Pulse! Please click the button below to verify your email address and activate your account.
-          </p>
-          <div style="text-align: center; margin: 32px 0;">
-            <a href="${link}" style="background-color: #2563eb; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; transition: background-color 0.2s;">
-              Verify Email Address
-            </a>
-          </div>
-          <hr style="border: none; border-top: 1px solid #eaeaea; margin: 32px 0;" />
-          <p style="color: #9ca3af; font-size: 14px; text-align: center; line-height: 20px;">
-            If you're having trouble clicking the button, copy and paste this link into your browser:<br/>
-            <a href="${link}" style="color: #2563eb; word-break: break-all; text-decoration: underline; margin-top: 8px; display: inline-block;">${link}</a>
-          </p>
-          <p style="color: #9ca3af; font-size: 14px; text-align: center; margin-top: 24px;">
-            If you didn't request this email, you can safely ignore it.
-          </p>
+      html: buildEmailLayout(`
+        <h2 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">Verify Your Email</h2>
+        <p style="margin:0 0 8px;color:#6b7280;font-size:15px;">Hello ${firstName || 'User'},</p>
+        <p style="margin:0 0 28px;color:#6b7280;font-size:15px;">Thank you for registering with ComponentPulse! Please verify your email address to activate your account.</p>
+        <div style="text-align:center;margin-bottom:28px;">
+          <a href="${link}" style="display:inline-block;background:#00A76F;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">Verify Email Address</a>
         </div>
-      `,
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+        <p style="color:#9ca3af;font-size:13px;text-align:center;margin:0 0 8px;">If the button doesn't work, copy and paste this link into your browser:</p>
+        <p style="text-align:center;margin:0 0 16px;"><a href="${link}" style="color:#00A76F;font-size:13px;word-break:break-all;">${link}</a></p>
+        <p style="color:#9ca3af;font-size:13px;text-align:center;margin:0;">If you didn't request this, you can safely ignore this email.</p>
+      `),
     });
 
     return NextResponse.json({ success: true, data });

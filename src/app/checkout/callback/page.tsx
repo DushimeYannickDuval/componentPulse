@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -8,12 +8,11 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { useRouter, useSearchParams } from 'src/routes/hooks';
-
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
-import { useCreateOrder, useUpdatePaymentStatus, useValidateCoupon } from 'src/hooks/firebase';
+import { useCreateOrder, useValidateCoupon, useUpdatePaymentStatus } from 'src/hooks/firebase';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -114,7 +113,6 @@ export default function CheckoutCallbackPage() {
 
       // Step 5: Send confirmation email
       try {
-        const pendingOrder = JSON.parse(pendingOrderRaw);
         await fetch('/api/orders/send-confirmation', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

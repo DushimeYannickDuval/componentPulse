@@ -4,6 +4,7 @@ import { varAlpha } from 'minimal-shared/utils';
 import AutoScroll from 'embla-carousel-auto-scroll';
 
 import Box from '@mui/material/Box';
+import { alpha } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Skeleton from '@mui/material/Skeleton';
 import Container from '@mui/material/Container';
@@ -16,12 +17,9 @@ import { useCategories } from 'src/hooks/firebase';
 
 import { Image } from 'src/components/image';
 import { Iconify } from 'src/components/iconify';
-import { alpha } from '@mui/material';
-
 import {
   Carousel,
   useCarousel,
-  CarouselDotButtons,
   CarouselArrowBasicButtons,
 } from 'src/components/carousel';
 

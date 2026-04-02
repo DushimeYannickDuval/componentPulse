@@ -1,9 +1,9 @@
 'use client';
 
 import { m } from 'framer-motion';
-import { useMemo, useState, useEffect } from 'react';
 import { useBoolean } from 'minimal-shared/hooks';
 import { useSearchParams } from 'next/navigation';
+import { useMemo, useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';

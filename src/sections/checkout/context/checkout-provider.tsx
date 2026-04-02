@@ -4,6 +4,7 @@ import type { IAddressItem } from 'src/types/common';
 import type { ICheckoutItem, ICheckoutState } from 'src/types/checkout';
 
 import { isEqual } from 'es-toolkit';
+import { doc, getDoc } from 'firebase/firestore';
 import { getStorage } from 'minimal-shared/utils';
 import { useLocalStorage } from 'minimal-shared/hooks';
 import { useMemo, useState, Suspense, useEffect, useCallback } from 'react';
@@ -11,10 +12,9 @@ import { useMemo, useState, Suspense, useEffect, useCallback } from 'react';
 import { paths } from 'src/routes/paths';
 import { useRouter, usePathname, useSearchParams } from 'src/routes/hooks';
 
-import { SplashScreen } from 'src/components/loading-screen';
-
-import { doc, getDoc } from 'firebase/firestore';
 import { FIRESTORE } from 'src/lib/firebase';
+
+import { SplashScreen } from 'src/components/loading-screen';
 
 import { CheckoutContext } from './checkout-context';
 
