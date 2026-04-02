@@ -106,11 +106,10 @@ export async function getUserProfile(uid: string): Promise<any> {
  *************************************** */
 export const signInWithPassword = async ({ email, password }: SignInParams): Promise<void> => {
   try {
-    await _signInWithEmailAndPassword(AUTH, email, password);
+    const credential = await _signInWithEmailAndPassword(AUTH, email, password);
 
-    const user = AUTH.currentUser;
-
-    if (!user?.emailVerified) {
+    if (!credential.user.emailVerified) {
+      await _signOut(AUTH);
       throw new Error('Email not verified! Please check your inbox.');
     }
   } catch (error) {

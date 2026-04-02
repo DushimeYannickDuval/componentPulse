@@ -74,6 +74,13 @@ export function FirebaseSignInView() {
     } catch (error) {
       console.error(error);
       const feedbackMessage = getErrorMessage(error);
+
+      if (feedbackMessage.toLowerCase().includes('email not verified')) {
+        const queryString = new URLSearchParams({ email: data.email }).toString();
+        router.push(`${paths.auth.firebase.verify}?${queryString}`);
+        return;
+      }
+
       setErrorMessage(feedbackMessage);
     }
   });
