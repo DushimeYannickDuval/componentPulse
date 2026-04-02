@@ -48,8 +48,13 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ success: true, data });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating verification link:', error);
-    return NextResponse.json({ error: 'Failed to generate verification link' }, { status: 500 });
+    const errorCode = error?.errorInfo?.code || error?.code || 'unknown';
+    const errorMessage = error?.errorInfo?.message || error?.message || 'Unknown error';
+    return NextResponse.json(
+      { error: `Failed to generate verification link: [${errorCode}] ${errorMessage}` },
+      { status: 500 }
+    );
   }
 }
