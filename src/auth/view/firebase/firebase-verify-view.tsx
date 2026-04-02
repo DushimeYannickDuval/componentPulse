@@ -42,7 +42,7 @@ export function FirebaseVerifyView() {
       setIsResending(true);
       setErrorMessage(null);
       setResendSuccess(false);
-      await resendVerificationEmail();
+      await resendVerificationEmail(email);
       setResendSuccess(true);
       setCooldown(COOLDOWN_SECONDS);
     } catch (error) {

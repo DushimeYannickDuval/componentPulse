@@ -337,14 +337,16 @@ export const sendPasswordResetEmail = async ({ email }: ForgotPasswordParams): P
 /** **************************************
  * Resend verification email
  *************************************** */
-export const resendVerificationEmail = async (): Promise<void> => {
-  const user = AUTH.currentUser;
-  if (!user) throw new Error('No user is currently signed in');
+export const resendVerificationEmail = async (email: string): Promise<void> => {
+  if (!email) throw new Error('Email address is required to resend verification.');
 
   const resp = await fetch('/api/auth/send-verification', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: user.email, firstName: user.displayName?.split(' ')[0] || '' }),
+    body: JSON.stringify({
+      email,
+      firstName: AUTH.currentUser?.displayName?.split(' ')[0] || '',
+    }),
   });
 
   if (!resp.ok) {
