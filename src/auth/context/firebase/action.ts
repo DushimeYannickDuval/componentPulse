@@ -339,19 +339,16 @@ export const sendPasswordResetEmail = async ({ email }: ForgotPasswordParams): P
  *************************************** */
 export const resendVerificationEmail = async (): Promise<void> => {
   const user = AUTH.currentUser;
-  if (user) {
-    try {
-      const resp = await fetch('/api/auth/send-verification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email }),
-      });
-      if (!resp.ok) throw new Error('API config missing');
-    } catch (apiErr) {
-      console.warn('Falling back to default Firebase Auth templates');
-      await _sendEmailVerification(user);
-    }
-  } else {
-    throw new Error('No user is currently signed in');
+  if (!user) throw new Error('No user is currently signed in');
+
+  const resp = await fetch('/api/auth/send-verification', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: user.email, firstName: user.displayName?.split(' ')[0] || '' }),
+  });
+
+  if (!resp.ok) {
+    const data = await resp.json().catch(() => ({}));
+    throw new Error(data.error || 'Failed to send verification email. Please try again later.');
   }
 };

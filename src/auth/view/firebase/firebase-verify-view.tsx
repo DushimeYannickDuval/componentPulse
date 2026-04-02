@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
@@ -19,6 +19,8 @@ import { FormReturnLink } from '../../components/form-return-link';
 
 // ----------------------------------------------------------------------
 
+const COOLDOWN_SECONDS = 60;
+
 export function FirebaseVerifyView() {
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || '';
@@ -26,13 +28,23 @@ export function FirebaseVerifyView() {
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return undefined;
+    const timer = setTimeout(() => setCooldown((prev) => prev - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldown]);
 
   const handleResendEmail = async () => {
+    if (cooldown > 0) return;
     try {
       setIsResending(true);
       setErrorMessage(null);
+      setResendSuccess(false);
       await resendVerificationEmail();
       setResendSuccess(true);
+      setCooldown(COOLDOWN_SECONDS);
     } catch (error) {
       console.error(error);
       const feedbackMessage = getErrorMessage(error);
@@ -56,6 +68,11 @@ export function FirebaseVerifyView() {
         }
       />
 
+      <Alert severity="warning" sx={{ mb: 3 }}>
+        Can&apos;t find the email? <strong>Check your spam or junk folder</strong> — verification
+        emails sometimes get filtered there.
+      </Alert>
+
       {!!errorMessage && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {errorMessage}
@@ -64,22 +81,26 @@ export function FirebaseVerifyView() {
 
       {resendSuccess && (
         <Alert severity="success" sx={{ mb: 3 }}>
-          Verification email sent successfully!
+          Verification email sent! Check your inbox and spam folder.
         </Alert>
       )}
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Didn&apos;t receive the email? Check your spam folder or
+        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center' }}>
+          Still didn&apos;t receive it? Click below to resend.
         </Typography>
 
         <Button
           variant="outlined"
           color="inherit"
           onClick={handleResendEmail}
-          disabled={isResending}
+          disabled={isResending || cooldown > 0}
         >
-          {isResending ? 'Sending...' : 'Resend verification email'}
+          {isResending
+            ? 'Sending...'
+            : cooldown > 0
+              ? `Resend in ${cooldown}s`
+              : 'Resend verification email'}
         </Button>
       </Box>
 
