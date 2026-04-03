@@ -60,7 +60,7 @@ export function ProductItem({ product }: Props) {
       <Paper
         variant="outlined"
         sx={{
-          p: 2,
+          p: { xs: 1, md: 2 },
           borderRadius: 2,
           bgcolor: 'transparent',
           position: 'relative',

@@ -190,11 +190,11 @@ export function ProductShopView() {
     <>
       {viewMode === 'grid' ? (
         <Box
-          rowGap={4}
-          columnGap={3}
+          rowGap={{ xs: 2, md: 4 }}
+          columnGap={{ xs: 2, md: 3 }}
           display="grid"
           gridTemplateColumns={{
-            xs: 'repeat(1, 1fr)',
+            xs: 'repeat(2, 1fr)',
             sm: 'repeat(2, 1fr)',
             md: 'repeat(2, 1fr)',
             lg: 'repeat(3, 1fr)',
@@ -260,7 +260,8 @@ export function ProductShopView() {
           page={page}
           onChange={(_, value) => setPage(value)}
           color="primary"
-          size="large"
+          size="medium"
+          siblingCount={0}
           sx={{
             mt: 8,
             mb: 5,

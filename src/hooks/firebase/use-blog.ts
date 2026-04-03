@@ -42,19 +42,26 @@ export function usePosts(options?: { publish?: boolean; limit?: number }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'));
+    // Build query with where clause BEFORE orderBy to avoid index issues
+    let q = query(collection(db, COLLECTION));
 
     if (options?.publish !== undefined) {
       q = query(q, where('publish', '==', options.publish));
     }
 
+    // Add orderBy after where clause
+    q = query(q, orderBy('createdAt', 'desc'));
+
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        const fetched = snapshot.docs.map((document) => ({
-          id: document.id,
-          ...document.data(),
-        })) as PostItem[];
+        const fetched = snapshot.docs
+          .map((document) => ({
+            id: document.id,
+            ...document.data(),
+          }))
+          .filter((post) => post.createdAt !== null) as PostItem[]; // Filter out posts with null timestamps
+        
         setPosts(options?.limit ? fetched.slice(0, options.limit) : fetched);
         setLoading(false);
       },
