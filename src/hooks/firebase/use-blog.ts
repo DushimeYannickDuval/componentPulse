@@ -58,10 +58,11 @@ export function usePosts(options?: { publish?: boolean; limit?: number }) {
         const fetched = snapshot.docs
           .map((document) => ({
             id: document.id,
+            createdAt: document.data().createdAt.toDate(),
             ...document.data(),
           }))
           .filter((post) => post.createdAt !== null) as PostItem[]; // Filter out posts with null timestamps
-        
+
         setPosts(options?.limit ? fetched.slice(0, options.limit) : fetched);
         setLoading(false);
       },
