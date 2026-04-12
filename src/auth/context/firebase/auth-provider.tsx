@@ -25,83 +25,106 @@ export function AuthProvider({ children }: Props) {
   const { state, setState } = useSetState<AuthState>(getInitialState());
 
   const checkUserSession = useCallback(async () => {
-    try {
-      onIdTokenChanged(AUTH, async (user: AuthState['user']) => {
-        if (user) {
-          // First check if user is an admin
-          const adminDoc = await getDoc(doc(FIRESTORE, 'admins', user.uid));
+    onIdTokenChanged(AUTH, async (user: AuthState['user']) => {
+      try {
+        if (!user) {
+          console.log('[Auth] No user signed in.');
+          setState({ user: null, loading: false });
+          return;
+        }
 
-          if (adminDoc.exists()) {
-            const adminData = adminDoc.data();
+        console.log('[Auth] User signed in:', user.uid, '| emailVerified:', user.emailVerified);
 
-            // Check if admin is active
-            if (!adminData.isActive) {
-              setState({ user: null, loading: false });
-              return;
-            }
+        // First check if user is an admin
+        let adminDoc;
+        try {
+          adminDoc = await getDoc(doc(FIRESTORE, 'admins', user.uid));
+        } catch (err: any) {
+          console.error('[Auth] Firestore read on admins/ failed:', err?.code, err?.message);
+          console.error('[Auth] → Check that Firestore security rules are deployed.');
+          setState({ user: null, loading: false });
+          return;
+        }
 
-            // Update last login without blocking
-            setDoc(
-              doc(FIRESTORE, 'admins', user.uid),
-              { lastLoginAt: serverTimestamp() },
-              { merge: true }
-            ).catch(console.error);
+        if (adminDoc.exists()) {
+          const adminData = adminDoc.data();
+          console.log('[Auth] Admin doc found. isActive:', adminData.isActive, '| role:', adminData.role);
 
-            const adminPayload = {
-              ...user,
-              ...adminData,
-              isAdmin: true,
-              userType: 'admin',
-            };
-            setState({ user: adminPayload, loading: false });
-            return;
-          }
-
-          // Check if regular user (customer)
-          // For email/password users, require email verification
-          if (!user.emailVerified && user.providerData[0]?.providerId === 'password') {
+          if (!adminData.isActive) {
+            console.log('[Auth] Admin is inactive — denying access.');
             setState({ user: null, loading: false });
             return;
           }
 
-          const userDoc = await getDoc(doc(FIRESTORE, 'users', user.uid));
+          setDoc(
+            doc(FIRESTORE, 'admins', user.uid),
+            { lastLoginAt: serverTimestamp() },
+            { merge: true }
+          ).catch(console.error);
 
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-
-            // Check if user is active
-            if (!userData.isActive) {
-              setState({ user: null, loading: false });
-              return;
-            }
-
-            // Update last login without blocking UI
-            setDoc(
-              doc(FIRESTORE, 'users', user.uid),
-              { lastLoginAt: serverTimestamp() },
-              { merge: true }
-            ).catch(console.error);
-
-            const customerPayload = {
-              ...user,
-              ...userData,
-              isAdmin: false,
-              userType: 'customer',
-            };
-            setState({ user: customerPayload, loading: false });
-          } else {
-            // User exists in Auth but not in Firestore (edge case)
-            const edgeCaseUser = { ...user, isAdmin: false, userType: 'customer' };
-            setState({ user: edgeCaseUser, loading: false });
-          }
-        } else {
-          setState({ user: null, loading: false });
+          const adminPayload = {
+            ...user,
+            ...adminData,
+            isAdmin: true,
+            userType: 'admin',
+          };
+          console.log('[Auth] Setting user as admin ✅');
+          setState({ user: adminPayload, loading: false });
+          return;
         }
-      });
-    } catch (error) {
-      console.error('Error checking user session:', error);
-      setState({ user: null, loading: false });
-    }
+
+        console.log('[Auth] No admin doc found — checking users collection.');
+
+        // For email/password users, require email verification
+        if (!user.emailVerified && user.providerData[0]?.providerId === 'password') {
+          console.log('[Auth] Email not verified — blocking sign in.');
+          setState({ user: null, loading: false });
+          return;
+        }
+
+        let userDoc;
+        try {
+          userDoc = await getDoc(doc(FIRESTORE, 'users', user.uid));
+        } catch (err: any) {
+          console.error('[Auth] Firestore read on users/ failed:', err?.code, err?.message);
+          setState({ user: null, loading: false });
+          return;
+        }
+
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          console.log('[Auth] Customer doc found. isActive:', userData.isActive);
+
+          if (!userData.isActive) {
+            console.log('[Auth] Customer is inactive — denying access.');
+            setState({ user: null, loading: false });
+            return;
+          }
+
+          setDoc(
+            doc(FIRESTORE, 'users', user.uid),
+            { lastLoginAt: serverTimestamp() },
+            { merge: true }
+          ).catch(console.error);
+
+          const customerPayload = {
+            ...user,
+            ...userData,
+            isAdmin: false,
+            userType: 'customer',
+          };
+          console.log('[Auth] Setting user as customer ✅');
+          setState({ user: customerPayload, loading: false });
+        } else {
+          console.log('[Auth] No Firestore doc found for user — edge case customer.');
+          const edgeCaseUser = { ...user, isAdmin: false, userType: 'customer' };
+          setState({ user: edgeCaseUser, loading: false });
+        }
+      } catch (error) {
+        console.error('[Auth] Unexpected error in session check:', error);
+        setState({ user: null, loading: false });
+      }
+    });
   }, [setState]);
 
   useEffect(() => {
