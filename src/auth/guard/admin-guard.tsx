@@ -23,21 +23,26 @@ export function AdminGuard({ children }: AdminGuardProps) {
   const [isChecking, setIsChecking] = useState(true);
 
   const checkPermissions = async (): Promise<void> => {
+    console.log('[AdminGuard] loading:', loading, '| authenticated:', authenticated, '| isAdmin:', user?.isAdmin, '| role:', user?.role);
+
     if (loading) {
       return;
     }
 
     if (!authenticated) {
+      console.log('[AdminGuard] Not authenticated → redirecting to sign-in');
       router.replace(paths.auth.firebase.signIn);
       return;
     }
 
     // If user is not an admin, redirect to customer account page
     if (!user?.isAdmin) {
+      console.log('[AdminGuard] isAdmin is false → redirecting to account. Full user:', JSON.stringify({ uid: user?.uid, isAdmin: user?.isAdmin, role: user?.role, userType: user?.userType }));
       router.replace(paths.account.root);
       return;
     }
 
+    console.log('[AdminGuard] Access granted ✅');
     setIsChecking(false);
   };
 
