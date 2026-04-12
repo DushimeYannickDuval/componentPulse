@@ -20,7 +20,9 @@
     "re:build-npm": "npm run clean && npm install && npm run build",
     "tsc:dev": "yarn dev & yarn tsc:watch",
     "tsc:watch": "tsc --noEmit --watch",
-    "tsc:print": "npx tsc --showConfig"
+    "tsc:print": "npx tsc --showConfig",
+    "migrate:urls:dry": "tsx scripts/migrate-storage-urls.ts --dry-run",
+    "migrate:urls:execute": "tsx scripts/migrate-storage-urls.ts --execute"
   },
   "engines": {
     "node": ">=20"
@@ -97,6 +99,7 @@
     "@types/stylis": "^4.2.7",
     "@types/turndown": "^5.0.5",
     "@typescript-eslint/parser": "^8.44.1",
+    "dotenv": "^17.4.1",
     "eslint": "^9.36.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",
@@ -106,6 +109,7 @@
     "eslint-plugin-unused-imports": "^4.2.0",
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.44.1"
   }

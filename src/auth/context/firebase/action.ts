@@ -109,8 +109,12 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
     const credential = await _signInWithEmailAndPassword(AUTH, email, password);
 
     if (!credential.user.emailVerified) {
-      await _signOut(AUTH);
-      throw new Error('Email not verified! Please check your inbox.');
+      // Admins bypass the email verification requirement
+      const { isAdmin } = await checkIsAdmin(credential.user.uid);
+      if (!isAdmin) {
+        await _signOut(AUTH);
+        throw new Error('Email not verified! Please check your inbox.');
+      }
     }
   } catch (error) {
     console.error('Error during sign in with password:', error);
