@@ -32,7 +32,7 @@ import {
 const MAIN_HERO_SLIDE = {
   id: 'main-hero',
   label: 'WELCOME TO',
-  name: 'Component Pulse',
+  name: 'ComponentPulse',
   caption:
     "Your trusted partner for premium electronic components, solar equipment, and DIY prototyping supplies in Uganda. Let's build the future together.",
   coverUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80',
