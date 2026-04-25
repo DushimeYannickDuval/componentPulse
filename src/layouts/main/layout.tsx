@@ -667,7 +667,7 @@ export function MainLayout({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
               component="img"
-              src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg"
               alt="Visa"
               sx={{ height: 24, filter: 'brightness(0) invert(1)' }}
             />
