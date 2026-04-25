@@ -627,12 +627,12 @@ export function MainLayout({
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Iconify icon="solar:phone-bold" sx={{ color: 'primary.main' }} />
                 <Link
-                  href="tel:+256700000000"
+                  href="tel:+256 790 270 840"
                   color="grey.400"
                   underline="hover"
                   sx={{ typography: 'body2' }}
                 >
-                  +256 700 000 000
+                  +256 790 270 840
                 </Link>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -662,7 +662,7 @@ export function MainLayout({
           }}
         >
           <Typography variant="body2" sx={{ color: 'grey.500' }}>
-            © {new Date().getFullYear()} ComponentPulse. All rights reserved.
+            © {new Date().getFullYear()} componentPulse. All rights reserved.
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
