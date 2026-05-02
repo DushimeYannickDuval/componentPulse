@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: 'Product Details - ComponentPulse',
+  title: 'Product Details - componentPulse',
 };
 
 export default async function Page({ params }: Props) {
