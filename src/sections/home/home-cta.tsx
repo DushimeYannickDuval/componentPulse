@@ -113,7 +113,7 @@ export function HomeCTA() {
               </Button>
               <Button
                 component="a"
-                href="https://wa.me/256700000000"
+                href="https://wa.me/256790270840"
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="outlined"
