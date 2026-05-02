@@ -13,7 +13,7 @@ import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 
-const HERO_IMAGE = 'https://assets.skyfilabs.com/images/blog/certified-embedded-system-program.webp';
+const HERO_IMAGE = 'https://www.wonderfulpcb.com/wp-content/uploads/2025/10/dd45c8f87d014b1a973ebcd90271c5f5.webp';
 
 export function AboutHero() {
   return (
