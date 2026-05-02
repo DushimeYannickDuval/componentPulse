@@ -66,7 +66,7 @@ export function HomeHero() {
       id: product.id,
       label: 'HOT DEAL',
       name: product.name,
-      caption: product.description || 'Explore this amazing product at Component Pulse today.',
+      caption: product.description || 'Explore this amazing product at componentPulse today.',
       coverUrl:
         product.images?.[0]?.url ||
         'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80',
