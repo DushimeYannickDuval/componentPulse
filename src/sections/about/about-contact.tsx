@@ -121,10 +121,10 @@ export function AboutContact() {
                 Email Us
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
-                info@componentpulseug.com
+                info@componentPulseug.com
               </Typography>
               <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3, flexGrow: 1 }}>
-                support@componentpulseug.com
+                support@componentPulseug.com
               </Typography>
 
               <Button href="mailto:support@componentpulseug.com" variant="outlined" color="inherit">
