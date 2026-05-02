@@ -5,7 +5,7 @@ import { CheckoutView } from 'src/sections/checkout/view';
 // ----------------------------------------------------------------------
 
 export const metadata: Metadata = {
-  title: 'Checkout - ComponentPulse',
+  title: 'Checkout - componentPulse',
   description: 'Complete your purchase securely.',
 };
 
