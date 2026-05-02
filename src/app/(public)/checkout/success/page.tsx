@@ -5,7 +5,7 @@ import { CheckoutSuccessView } from 'src/sections/checkout/view';
 // ----------------------------------------------------------------------
 
 export const metadata: Metadata = {
-  title: 'Order Confirmed - ComponentPulse',
+  title: 'Order Confirmed - componentPulse',
   description: 'Your order has been successfully placed.',
 };
 
