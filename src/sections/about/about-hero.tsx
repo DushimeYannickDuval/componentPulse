@@ -13,7 +13,7 @@ import { RouterLink } from 'src/routes/components';
 
 // ----------------------------------------------------------------------
 
-const HERO_IMAGE = 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=1920&q=80';
+const HERO_IMAGE = 'https://assets.skyfilabs.com/images/blog/certified-embedded-system-program.webp';
 
 export function AboutHero() {
   return (
