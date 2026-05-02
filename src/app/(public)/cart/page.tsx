@@ -5,7 +5,7 @@ import { CartView } from 'src/sections/cart/view';
 // ----------------------------------------------------------------------
 
 export const metadata: Metadata = {
-  title: 'Shopping Cart - ComponentPulse',
+  title: 'Shopping Cart - componentPulse',
   description: 'Review your shopping cart and proceed to checkout.',
 };
 
