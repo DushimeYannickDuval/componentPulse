@@ -176,7 +176,7 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
       };
 
       // Add optional fields only if they have values
-      if (data.shortDescription) productData.shortDescription = data.shortDescription;
+      productData.shortDescription = data.shortDescription || '';
       if (data.compareAtPrice) productData.compareAtPrice = Number(data.compareAtPrice);
       if (data.costPrice) productData.costPrice = Number(data.costPrice);
       if (data.lowStockThreshold) productData.lowStockThreshold = Number(data.lowStockThreshold);
