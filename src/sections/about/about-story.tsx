@@ -50,8 +50,8 @@ export function AboutStory() {
             >
               <Box
                 component="img"
-                src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=800&q=80"
-                alt="Solar installation"
+                src="https://www.wonderfulpcb.com/wp-content/uploads/2025/10/dd45c8f87d014b1a973ebcd90271c5f5.webp"
+                alt="Microcontroller applications"
                 sx={{
                   width: '100%',
                   height: 'auto',
