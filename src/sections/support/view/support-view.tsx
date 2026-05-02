@@ -160,7 +160,7 @@ function SupportContactInfo() {
             iconColor="primary"
             title="Phone Support"
             subtitle="Call us for immediate technical assistance"
-            actionText={+256 790 270 840}
+            actionText="+256 790 270 840"
             actionHref={`tel:${phoneStr}`}
             info="Mon–Fri: 8AM–6PM"
           />
