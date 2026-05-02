@@ -5,7 +5,7 @@ import { ProductShopView } from 'src/sections/shop/view';
 // ----------------------------------------------------------------------
 
 export const metadata: Metadata = {
-  title: 'Shop - ComponentPulse',
+  title: 'Shop - componentPulse',
   description:
     'Browse our wide range of electronic components, solar panels, inverters, and batteries.',
 };
