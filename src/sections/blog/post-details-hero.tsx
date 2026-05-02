@@ -80,11 +80,11 @@ export function PostDetailsHero({ sx, title, coverUrl, createdAt, ...other }: Pr
               pb: { xs: 3, md: 8 },
             }}
           >
-            <Avatar alt="ComponentPulse" sx={{ width: 64, height: 64, mr: 2 }} />
+            <Avatar alt="componentPulse" sx={{ width: 64, height: 64, mr: 2 }} />
 
             <ListItemText
               sx={{ color: 'common.white' }}
-              primary="ComponentPulse Editor"
+              primary="componentPulse Editor"
               secondary={fDate(createdAt)}
               slotProps={{
                 primary: { sx: { typography: 'subtitle1' } },
