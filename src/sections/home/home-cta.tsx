@@ -16,7 +16,7 @@ import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-const BG_IMAGE = 'https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=1920&q=80';
+const BG_IMAGE = 'https://assets.skyfilabs.com/images/blog/certified-embedded-system-program.webp';
 
 export function HomeCTA() {
   return (
