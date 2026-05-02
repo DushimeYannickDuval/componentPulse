@@ -50,7 +50,7 @@ export function AboutStory() {
             >
               <Box
                 component="img"
-                src="https://www.wonderfulpcb.com/wp-content/uploads/2025/10/dd45c8f87d014b1a973ebcd90271c5f5.webp"
+                src="https://5.imimg.com/data5/SELLER/Default/2024/5/422257766/AS/MY/RE/5675130/embedded-system-development-500x500.jpeg"
                 alt="Microcontroller applications"
                 sx={{
                   width: '100%',
