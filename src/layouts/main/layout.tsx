@@ -643,7 +643,7 @@ export function MainLayout({
                   underline="hover"
                   sx={{ typography: 'body2' }}
                 >
-                  info@componentpulseug.com
+                  info@componentPulseug.com
                 </Link>
               </Box>
             </Stack>
@@ -667,7 +667,7 @@ export function MainLayout({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
               component="img"
-              src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/visa/visa-original.svg"
+              src="https://upload.wikimedia.org/wikipedia/commons/5/57/Visa_Inc._logo_%282014%E2%80%932021%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
               alt="Visa"
               sx={{ height: 24, filter: 'brightness(0) invert(1)' }}
             />
