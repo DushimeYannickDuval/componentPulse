@@ -191,7 +191,7 @@ export function Logo({
       </LogoRoot>
       <Stack>
         <Typography variant="h6" fontWeight="bold">
-          Component Pulse
+          componentPulse
         </Typography>
         <Typography variant="caption" sx={{ mt: -0.5 }}>
           Innovation Without Limits.
