@@ -16,10 +16,10 @@ const content = `
 
 Effective Date: [Insert Date]
 
-Welcome to **ComponentPulse**. By accessing or using our website, products, and services, you agree to comply with and be bound by the following Terms of Service.
+Welcome to **componentPulse**. By accessing or using our website, products, and services, you agree to comply with and be bound by the following Terms of Service.
 
 ### 1. Acceptance of Terms
-By using ComponentPulse, you acknowledge that you have read, understood, and agree to these Terms. If you do not agree, please do not use our services.
+By using componentPulse, you acknowledge that you have read, understood, and agree to these Terms. If you do not agree, please do not use our services.
 
 ### 2. Product and Service Descriptions
 We strive to provide accurate descriptions of our electronics and components. However, we do not warrant that product descriptions, pricing, or other content on this site are perfectly accurate, complete, or error-free.
