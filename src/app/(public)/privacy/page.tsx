@@ -16,7 +16,7 @@ const content = `
 
 Effective Date: [Insert Date]
 
-At **ComponentPulse**, we respect your privacy and are committed to protecting it. This Privacy Policy explains what information we collect, how we use it, and how we protect it.
+At **componentPulse**, we respect your privacy and are committed to protecting it. This Privacy Policy explains what information we collect, how we use it, and how we protect it.
 
 ### 1. Information We Collect
 We collect information you provide directly to us (e.g., when you create an account, make a purchase, or contact us for support). This includes:
