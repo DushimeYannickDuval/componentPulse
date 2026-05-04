@@ -110,8 +110,8 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
     if (currentProduct) {
       reset({
         name: currentProduct.name,
-        description: currentProduct.description,
-        shortDescription: currentProduct.shortDescription || '',
+        shortDescription: currentProduct.shortDescription,
+        description: currentProduct.description ||'',        
         sku: currentProduct.sku,
         price: currentProduct.price,
         compareAtPrice: currentProduct.compareAtPrice || 0,
@@ -163,6 +163,7 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
       // Build product data, excluding undefined values to avoid Firestore errors
       const productData: Partial<ProductFormData> = {
         name: data.name,
+        shortDescription: data.shortDescription,
         description: data.description || '',
         sku: data.sku,
         price: Number(data.price) || 0,
@@ -176,7 +177,7 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
       };
 
       // Add optional fields only if they have values
-      productData.shortDescription = data.shortDescription || '';
+      if (data.shortDescription) productData.shortDescription = data.shortDescription;
       if (data.compareAtPrice) productData.compareAtPrice = Number(data.compareAtPrice);
       if (data.costPrice) productData.costPrice = Number(data.costPrice);
       if (data.lowStockThreshold) productData.lowStockThreshold = Number(data.lowStockThreshold);
