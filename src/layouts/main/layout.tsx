@@ -510,39 +510,79 @@ export function MainLayout({
           }}
         >
           {/* Company Info */}
-          <Box>
-            <Logo isSingle={false} sx={{ mb: 3 }} />
-            <Typography variant="body2" sx={{ color: 'grey.400', mb: 2 }}>
-              Your trusted source for quality electronic components, solar equipment, and electrical
-              supplies in Uganda.
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton
-                size="small"
-                sx={{ color: 'grey.400', '&:hover': { color: 'primary.main' } }}
-              >
-                <Iconify icon="mdi:facebook" />
-              </IconButton>
-              <IconButton
-                size="small"
-                sx={{ color: 'grey.400', '&:hover': { color: 'primary.main' } }}
-              >
-                <Iconify icon="mdi:twitter" />
-              </IconButton>
-              <IconButton
-                size="small"
-                sx={{ color: 'grey.400', '&:hover': { color: 'primary.main' } }}
-              >
-                <Iconify icon="mdi:instagram" />
-              </IconButton>
-              <IconButton
-                size="small"
-                sx={{ color: 'grey.400', '&:hover': { color: 'primary.main' } }}
-              >
-                <Iconify icon="mdi:whatsapp" />
-              </IconButton>
-            </Box>
-          </Box>
+<Box>
+  <Logo isSingle={false} sx={{ mb: 3 }} />
+
+  <Typography
+    variant="body2"
+    sx={{ color: 'grey.400', mb: 2 }}
+  >
+    Your trusted source for quality electronic components,
+    solar equipment, and electrical supplies in Uganda.
+  </Typography>
+
+  <Box sx={{ display: 'flex', gap: 1 }}>
+    {/* Facebook */}
+    <IconButton
+      component="a"
+      href="https://facebook.com/componentpulse"
+      target="_blank"
+      rel="noopener noreferrer"
+      size="small"
+      sx={{
+        color: 'grey.400',
+        '&:hover': { color: '#1877F2' },
+      }}
+    >
+      <Iconify icon="mdi:facebook" />
+    </IconButton>
+
+    {/* linkedin */}
+    <IconButton
+  component="a"
+  href="https://www.linkedin.com/company/componentpulse"
+  target="_blank"
+  rel="noopener noreferrer"
+  size="small"
+  sx={{
+    color: 'grey.400',
+    '&:hover': { color: '#0A66C2' },
+  }}
+>
+  <Iconify icon="mdi:linkedin-box" />
+</IconButton>
+
+    {/* Instagram */}
+    <IconButton
+      component="a"
+      href="https://instagram.com/componentpulse"
+      target="_blank"
+      rel="noopener noreferrer"
+      size="small"
+      sx={{
+        color: 'grey.400',
+        '&:hover': { color: '#E4405F' },
+      }}
+    >
+      <Iconify icon="mdi:instagram" />
+    </IconButton>
+
+    {/* WhatsApp */}
+    <IconButton
+      component="a"
+      href="https://wa.me/256790270840"
+      target="_blank"
+      rel="noopener noreferrer"
+      size="small"
+      sx={{
+        color: 'grey.400',
+        '&:hover': { color: '#25D366' },
+      }}
+    >
+      <Iconify icon="mdi:whatsapp" />
+    </IconButton>
+  </Box>
+</Box>
 
           {/* Quick Links */}
           <Box>
@@ -643,7 +683,7 @@ export function MainLayout({
                   underline="hover"
                   sx={{ typography: 'body2' }}
                 >
-                  info@componentPulseug.com
+                  info@componentpulseug.com
                 </Link>
               </Box>
             </Stack>
