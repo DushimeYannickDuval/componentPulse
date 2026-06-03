@@ -320,14 +320,43 @@ export function MainLayout({
           }}
         >
           <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Iconify icon="solar:phone-bold" />
-              +256 790 270 840
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#25D366' }}>
-              <Iconify icon="logos:whatsapp-icon" />
-              Chat on WhatsApp
-            </Box>
+{/* Phone (click to call) */}
+<Box
+  component="a"
+  href="tel:+256790270840"
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.5,
+    color: 'inherit',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    '&:hover': { color: 'primary.main' },
+  }}
+>
+  <Iconify icon="solar:phone-bold" />
+  +256 790 270 840
+</Box>
+
+{/* WhatsApp (click to chat) */}
+<Box
+  component="a"
+  href="https://wa.me/256790270840?text=Hello%20ComponentPulse,%20I%20need%20assistance."
+  target="_blank"
+  rel="noopener noreferrer"
+  sx={{
+    display: 'flex',
+    alignItems: 'center',
+    gap: 0.5,
+    color: '#25D366',
+    textDecoration: 'none',
+    cursor: 'pointer',
+    '&:hover': { opacity: 0.8 },
+  }}
+>
+  <Iconify icon="logos:whatsapp-icon" />
+  Chat on WhatsApp
+</Box>
           </Box>
           <Box>Free delivery within Kampala for orders above UGX 500,000</Box>
         </Box>
