@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: `Terms of Service | ${CONFIG.appName}
 const content = `
 # Terms of Service
 
-Effective Date: [1/01/2026]
+Effective Date: 1/01/2026
 
 Welcome to **componentPulse**. By accessing or using our website, products, and services, you agree to comply with and be bound by the following Terms of Service.
 
