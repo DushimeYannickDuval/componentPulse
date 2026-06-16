@@ -25,6 +25,8 @@ type Props = {
 export function TrainingModuleCard({ module }: Props) {
   const theme = useTheme();
 
+  console.log('MODULE DATA:', module);
+
   const isComingSoon = module.status === 'coming_soon';
 
   const linkTo = paths.trainingModules.details(module.id);
@@ -89,8 +91,7 @@ export function TrainingModuleCard({ module }: Props) {
             aspectRatio: '16/9',
             objectFit: 'cover',
             ...(isComingSoon && {
-              filter: 'grayscale(1)',
-              opacity: 0.8,
+              opacity: 0.9,
             }),
           }}
         />
