@@ -105,6 +105,15 @@ service firebase.storage {
     }
     
     // ===========================================
+    // Training Module Cover Images & Materials
+    // ===========================================
+    match /trainingModules/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAuthenticated() && request.resource.size < 25 * 1024 * 1024;
+      allow delete: if isAuthenticated();
+    }
+
+    // ===========================================
     // Temporary Uploads (for processing)
     // ===========================================
     match /temp/{userId}/{allPaths=**} {
