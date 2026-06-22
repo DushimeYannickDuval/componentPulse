@@ -1,4 +1,4 @@
-## Prerequisites  
+## Prerequisites 
 
 - Node.js >=20 (Recommended)
 
