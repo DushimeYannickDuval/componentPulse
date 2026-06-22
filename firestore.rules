@@ -165,5 +165,13 @@ service cloud.firestore {
     match /trainingSubscriptions/{subId} {
       allow read, write: if isAuthenticated();
     }
+
+    // ===========================================
+    // Newsletter Subscribers Collection
+    // ===========================================
+    match /newsletterSubscribers/{email} {
+      allow create, delete: if true;
+      allow read: if isAdmin();
+    }
   }
 }
