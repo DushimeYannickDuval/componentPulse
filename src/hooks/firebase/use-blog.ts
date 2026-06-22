@@ -56,11 +56,12 @@ export function usePosts(options?: { publish?: boolean; limit?: number }) {
       q,
       (snapshot) => {
         const fetched = snapshot.docs
-          .map((document) => ({
-            id: document.id,
-            createdAt: document.data().createdAt.toDate(),
-            ...document.data(),
-          }))
+          .map((document) => {
+            const data = document.data();
+            const raw = data.createdAt;
+            const createdAt = raw?.toDate ? raw.toDate() : raw ? new Date(raw) : null;
+            return { id: document.id, ...data, createdAt };
+          })
           .filter((post) => post.createdAt !== null) as PostItem[]; // Filter out posts with null timestamps
 
         setPosts(options?.limit ? fetched.slice(0, options.limit) : fetched);

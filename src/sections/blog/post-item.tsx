@@ -34,7 +34,7 @@ export function PostItem({ post, detailsHref, sx, ...other }: PostItemProps) {
 
       <CardContent sx={{ pt: 3 }}>
         <Typography variant="caption" component="div" sx={{ mb: 1, color: 'text.disabled' }}>
-          {post.createdAt ? format(post.createdAt.toDate(), 'dd MMM yyyy') : 'Recently'}
+          {/*{post.createdAt ? format(post.createdAt instanceof Date ? post.createdAt : post.createdAt.toDate(), 'dd MMM yyyy') : 'Recently'}*/}
         </Typography>
 
         <Link
@@ -102,7 +102,7 @@ export function PostItemLatest({ post, index, detailsHref }: PostItemLatestProps
         }}
       >
         <Typography variant="caption" component="div" sx={{ mb: 1, opacity: 0.64 }}>
-          {post.createdAt ? format(post.createdAt.toDate(), 'dd MMM yyyy') : 'Recently'}
+          {/*{post.createdAt ? format(post.createdAt instanceof Date ? post.createdAt : post.createdAt.toDate(), 'dd MMM yyyy') : 'Recently'}*/}
         </Typography>
 
         <Link
