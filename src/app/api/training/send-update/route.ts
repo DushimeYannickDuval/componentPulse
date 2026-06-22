@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server';
 import { query, where, getDocs, addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import { FIRESTORE } from 'src/lib/firebase';
+import { adminDb } from 'src/lib/firebase-admin';
 import { type TrainingUpdateType, sendTrainingUpdateEmail } from 'src/lib/email';
 
 // ----------------------------------------------------------------------
@@ -35,10 +36,10 @@ export async function POST(request: NextRequest) {
       name: d.data().userName as string,
     }));
 
-    // Optionally also include newsletter subscribers
+    // Optionally also include newsletter subscribers (use Admin SDK to bypass security rules)
     let newsletterEmails: string[] = [];
-    if (notifyNewsletterSubscribers) {
-      const nlSnap = await getDocs(collection(FIRESTORE, 'newsletterSubscribers'));
+    if (notifyNewsletterSubscribers && adminDb) {
+      const nlSnap = await adminDb.collection('newsletterSubscribers').get();
       const moduleEmails = new Set(moduleSubscribers.map((s) => s.email));
       newsletterEmails = nlSnap.docs
         .map((d) => d.id)
@@ -64,29 +65,31 @@ export async function POST(request: NextRequest) {
     const sent = results.filter((r) => r.status === 'fulfilled' && r.value === true).length;
     const failed = results.length - sent;
 
-    // Log to sentNewsletters
-    try {
-      const updateTypeLabels: Record<TrainingUpdateType, string> = {
-        launched: 'Module Launched',
-        updated: 'Module Updated',
-        coming_soon: 'Coming Soon Announcement',
-      };
-      await addDoc(collection(FIRESTORE, 'sentNewsletters'), {
-        type: 'training_update',
-        updateType,
-        subject: `Training Module ${updateTypeLabels[updateType]}: ${moduleTitle}`,
-        heading: moduleTitle,
-        moduleId,
-        moduleTitle,
-        moduleUrl,
-        recipients: allRecipients.map((s) => s.email),
-        recipientCount: allRecipients.length,
-        sent,
-        failed,
-        sentAt: serverTimestamp(),
-      });
-    } catch (logErr) {
-      console.error('Failed to log training notification:', logErr);
+    // Log to sentNewsletters (use Admin SDK to bypass security rules)
+    if (adminDb) {
+      try {
+        const updateTypeLabels: Record<TrainingUpdateType, string> = {
+          launched: 'Module Launched',
+          updated: 'Module Updated',
+          coming_soon: 'Coming Soon Announcement',
+        };
+        await adminDb.collection('sentNewsletters').add({
+          type: 'training_update',
+          updateType,
+          subject: `Training Module ${updateTypeLabels[updateType]}: ${moduleTitle}`,
+          heading: moduleTitle,
+          moduleId,
+          moduleTitle,
+          moduleUrl,
+          recipients: allRecipients.map((s) => s.email),
+          recipientCount: allRecipients.length,
+          sent,
+          failed,
+          sentAt: new Date(),
+        });
+      } catch (logErr) {
+        console.error('Failed to log training notification:', logErr);
+      }
     }
 
     return NextResponse.json({
