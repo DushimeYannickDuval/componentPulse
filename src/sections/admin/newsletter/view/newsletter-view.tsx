@@ -1,5 +1,6 @@
 'use client';
 
+import type { SentNewsletter } from 'src/hooks/firebase';
 import type { NewsletterSubscriber } from 'src/hooks/firebase';
 
 import { useState, useMemo } from 'react';
@@ -35,7 +36,7 @@ import TableContainer from '@mui/material/TableContainer';
 import CircularProgress from '@mui/material/CircularProgress';
 import LinearProgress from '@mui/material/LinearProgress';
 
-import { useNewsletterSubscribers } from 'src/hooks/firebase';
+import { useSentNewsletters, useNewsletterSubscribers } from 'src/hooks/firebase';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
@@ -47,6 +48,8 @@ type SendResult = { sent: number; failed: number } | null;
 
 export function NewsletterView() {
   const { subscribers, loading } = useNewsletterSubscribers();
+  const { campaigns, loading: campaignsLoading } = useSentNewsletters();
+  const [selectedCampaign, setSelectedCampaign] = useState<SentNewsletter | null>(null);
 
   const [tab, setTab] = useState('subscribers');
   const [search, setSearch] = useState('');
@@ -358,6 +361,213 @@ export function NewsletterView() {
     </Stack>
   );
 
+  const renderSentHistoryTab = () => (
+    <Stack spacing={2}>
+      <Card>
+        {campaignsLoading ? (
+          <LinearProgress />
+        ) : (
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Subject</TableCell>
+                  <TableCell>Type</TableCell>
+                  <TableCell>Sent</TableCell>
+                  <TableCell align="center">Delivered</TableCell>
+                  <TableCell align="center">Failed</TableCell>
+                  <TableCell align="right">Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {campaigns.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} align="center" sx={{ py: 6, color: 'text.secondary' }}>
+                      No newsletters sent yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  campaigns.map((c) => (
+                    <TableRow key={c.id} hover>
+                      <TableCell sx={{ maxWidth: 260 }}>
+                        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                          {c.subject}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={c.type === 'training_update' ? 'Training' : 'Newsletter'}
+                          color={c.type === 'training_update' ? 'info' : 'primary'}
+                          variant="soft"
+                        />
+                      </TableCell>
+                      <TableCell sx={{ color: 'text.secondary', fontSize: 13 }}>
+                        {c.sentAt ? format(c.sentAt, 'dd MMM yyyy, HH:mm') : '—'}
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 600 }}>
+                          {c.sent}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography
+                          variant="body2"
+                          sx={{ color: c.failed > 0 ? 'error.main' : 'text.disabled', fontWeight: 600 }}
+                        >
+                          {c.failed}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Tooltip title="View details">
+                          <IconButton size="small" onClick={() => setSelectedCampaign(c)}>
+                            <Iconify icon="eva:eye-outline" />
+                          </IconButton>
+                        </Tooltip>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Card>
+
+      {/* Campaign detail dialog */}
+      <Dialog
+        open={!!selectedCampaign}
+        onClose={() => setSelectedCampaign(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedCampaign && (
+          <>
+            <DialogTitle>
+              <Stack direction="row" alignItems="center" justifyContent="space-between">
+                <Typography variant="h6" noWrap sx={{ maxWidth: '80%' }}>
+                  {selectedCampaign.subject}
+                </Typography>
+                <Chip
+                  size="small"
+                  label={selectedCampaign.type === 'training_update' ? 'Training Update' : 'Newsletter'}
+                  color={selectedCampaign.type === 'training_update' ? 'info' : 'primary'}
+                />
+              </Stack>
+            </DialogTitle>
+            <DialogContent dividers>
+              <Stack spacing={2.5}>
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                  <Box sx={{ flex: 1, p: 2, bgcolor: 'background.neutral', borderRadius: 1 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>Sent At</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {selectedCampaign.sentAt ? format(selectedCampaign.sentAt, 'dd MMM yyyy, HH:mm') : '—'}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ flex: 1, p: 2, bgcolor: 'success.lighter', borderRadius: 1 }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>Delivered</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'success.dark' }}>
+                      {selectedCampaign.sent} / {selectedCampaign.recipientCount}
+                    </Typography>
+                  </Box>
+                  {selectedCampaign.failed > 0 && (
+                    <Box sx={{ flex: 1, p: 2, bgcolor: 'error.lighter', borderRadius: 1 }}>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>Failed</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: 'error.dark' }}>
+                        {selectedCampaign.failed}
+                      </Typography>
+                    </Box>
+                  )}
+                </Stack>
+
+                {selectedCampaign.heading && (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Heading</Typography>
+                    <Typography variant="body2">{selectedCampaign.heading}</Typography>
+                  </Box>
+                )}
+
+                {selectedCampaign.body && (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Body</Typography>
+                    <Box
+                      sx={{
+                        p: 2,
+                        bgcolor: 'background.neutral',
+                        borderRadius: 1,
+                        fontSize: 14,
+                        color: 'text.secondary',
+                        whiteSpace: 'pre-wrap',
+                        maxHeight: 200,
+                        overflow: 'auto',
+                      }}
+                    >
+                      {selectedCampaign.body}
+                    </Box>
+                  </Box>
+                )}
+
+                {(selectedCampaign.ctaLabel || selectedCampaign.ctaUrl) && (
+                  <Stack direction="row" spacing={2}>
+                    {selectedCampaign.ctaLabel && (
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>CTA Label</Typography>
+                        <Typography variant="body2">{selectedCampaign.ctaLabel}</Typography>
+                      </Box>
+                    )}
+                    {selectedCampaign.ctaUrl && (
+                      <Box sx={{ flex: 2 }}>
+                        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>CTA URL</Typography>
+                        <Typography variant="body2" noWrap sx={{ color: 'primary.main' }}>
+                          {selectedCampaign.ctaUrl}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Stack>
+                )}
+
+                {selectedCampaign.moduleTitle && (
+                  <Box>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>Training Module</Typography>
+                    <Typography variant="body2">{selectedCampaign.moduleTitle}</Typography>
+                  </Box>
+                )}
+
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Recipients ({selectedCampaign.recipients.length})
+                  </Typography>
+                  <Box
+                    sx={{
+                      maxHeight: 220,
+                      overflow: 'auto',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Table size="small">
+                      <TableBody>
+                        {selectedCampaign.recipients.map((email) => (
+                          <TableRow key={email}>
+                            <TableCell sx={{ fontSize: 13 }}>{email}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Box>
+                </Box>
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSelectedCampaign(null)}>Close</Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
+    </Stack>
+  );
+
   return (
     <DashboardContent>
       <Stack spacing={3}>
@@ -389,6 +599,16 @@ export function NewsletterView() {
               </Typography>
             </CardContent>
           </Card>
+          <Card sx={{ flex: 1, minWidth: 160 }}>
+            <CardContent sx={{ textAlign: 'center', py: 2.5 }}>
+              <Typography variant="h3" sx={{ color: 'warning.main' }}>
+                {campaignsLoading ? '—' : campaigns.length}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Campaigns Sent
+              </Typography>
+            </CardContent>
+          </Card>
         </Stack>
 
         <Divider />
@@ -405,6 +625,15 @@ export function NewsletterView() {
               value="subscribers"
             />
             <Tab label="Compose & Send" value="compose" />
+            <Tab
+              label={
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <span>Sent History</span>
+                  {!campaignsLoading && <Chip label={campaigns.length} size="small" />}
+                </Stack>
+              }
+              value="history"
+            />
           </TabList>
 
           <TabPanel value="subscribers" sx={{ p: 0 }}>
@@ -413,6 +642,10 @@ export function NewsletterView() {
 
           <TabPanel value="compose" sx={{ p: 0 }}>
             {renderComposeTab()}
+          </TabPanel>
+
+          <TabPanel value="history" sx={{ p: 0 }}>
+            {renderSentHistoryTab()}
           </TabPanel>
         </TabContext>
       </Stack>

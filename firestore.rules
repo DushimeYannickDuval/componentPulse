@@ -173,5 +173,12 @@ service cloud.firestore {
       allow create, delete: if true;
       allow read: if isAdmin();
     }
+
+    // ===========================================
+    // Sent Newsletters Log
+    // ===========================================
+    match /sentNewsletters/{docId} {
+      allow read, write: if isAdmin();
+    }
   }
 }

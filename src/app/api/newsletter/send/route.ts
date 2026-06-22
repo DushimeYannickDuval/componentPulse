@@ -1,6 +1,8 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
+import { FIRESTORE } from 'src/lib/firebase';
 import { buildEmailLayout } from 'src/lib/email';
 
 const resend = new Resend(process.env.RESEND_API_KEY || 're_placeholder');
@@ -68,6 +70,26 @@ export async function POST(request: Request) {
         if (r.status === 'fulfilled') sent += 1;
         else failed += 1;
       });
+    }
+
+    // Log the sent campaign to Firestore
+    try {
+      await addDoc(collection(FIRESTORE, 'sentNewsletters'), {
+        type: 'newsletter',
+        subject,
+        previewText: previewText || '',
+        heading,
+        body: emailBody,
+        ctaLabel: ctaLabel || '',
+        ctaUrl: ctaUrl || '',
+        recipients,
+        recipientCount: recipients.length,
+        sent,
+        failed,
+        sentAt: serverTimestamp(),
+      });
+    } catch (logErr) {
+      console.error('Failed to log sent newsletter:', logErr);
     }
 
     return NextResponse.json({ success: true, sent, failed });

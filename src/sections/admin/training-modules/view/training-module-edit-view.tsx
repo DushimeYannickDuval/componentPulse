@@ -11,10 +11,12 @@ import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import Switch from '@mui/material/Switch';
 import MenuItem from '@mui/material/MenuItem';
 import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { paths } from 'src/routes/paths';
@@ -43,6 +45,7 @@ export function TrainingModuleEditView({ id }: { id: string }) {
 
   // Subscriber blast state
   const [blastType, setBlastType] = useState<TrainingUpdateType>('launched');
+  const [notifyNewsletter, setNotifyNewsletter] = useState(true);
   const [blasting, setBlasting] = useState(false);
   const [blastResult, setBlastResult] = useState<{
     sent: number;
@@ -83,6 +86,7 @@ export function TrainingModuleEditView({ id }: { id: string }) {
           moduleTitle: module.title,
           updateType: blastType,
           moduleUrl,
+          notifyNewsletterSubscribers: notifyNewsletter,
         }),
       });
       const data = await res.json();
@@ -139,21 +143,35 @@ export function TrainingModuleEditView({ id }: { id: string }) {
           the type of update and click the button below.
         </Typography>
 
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
-          <TextField
-            select
-            label="Update Type"
-            value={blastType}
-            onChange={(e) => setBlastType(e.target.value as TrainingUpdateType)}
-            sx={{ minWidth: 220 }}
-          >
-            {UPDATE_TYPE_OPTIONS.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
-          </TextField>
+        <Stack spacing={2}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems={{ sm: 'center' }}>
+            <TextField
+              select
+              label="Update Type"
+              value={blastType}
+              onChange={(e) => setBlastType(e.target.value as TrainingUpdateType)}
+              sx={{ minWidth: 220 }}
+            >
+              {UPDATE_TYPE_OPTIONS.map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </TextField>
 
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={notifyNewsletter}
+                  onChange={(e) => setNotifyNewsletter(e.target.checked)}
+                  color="warning"
+                />
+              }
+              label="Also notify newsletter subscribers"
+            />
+          </Stack>
+
+          <Box>
           <Button
             variant="contained"
             color="warning"
@@ -169,6 +187,7 @@ export function TrainingModuleEditView({ id }: { id: string }) {
           >
             {blasting ? 'Sending...' : 'Notify Subscribers'}
           </Button>
+          </Box>
         </Stack>
       </Card>
 

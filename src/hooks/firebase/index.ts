@@ -11,6 +11,7 @@ export * from './use-settings';
 export * from './use-customers';
 export * from './use-categories';
 export * from './use-newsletter';
+export * from './use-sent-newsletters';
 export * from './use-testimonials';
 export * from './use-user-profile';
 export * from './use-notifications';
