@@ -129,6 +129,11 @@ export const navData: NavSectionProps['data'] = [
         path: paths.admin.tickets,
         icon: ICONS.chat,
       },
+      {
+        title: 'Newsletter',
+        path: paths.admin.newsletter,
+        icon: ICONS.mail,
+      },
     ],
   },
   /**

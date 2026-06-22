@@ -131,6 +131,8 @@ export const paths = {
     testimonials: `${ROOTS.ADMIN}/testimonials`,
     // Settings
     settings: `${ROOTS.ADMIN}/settings`,
+    // Newsletter
+    newsletter: `${ROOTS.ADMIN}/newsletter`,
     // Email Testing
     emailTest: `${ROOTS.ADMIN}/email-test`,
     // Admin Users (Super Admin only)

@@ -1,9 +1,57 @@
 'use client';
 
-import { useState } from 'react';
-import { doc, setDoc, getDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import {
+  doc,
+  query,
+  setDoc,
+  getDoc,
+  orderBy,
+  deleteDoc,
+  collection,
+  onSnapshot,
+  serverTimestamp,
+} from 'firebase/firestore';
 
 import { FIRESTORE } from 'src/lib/firebase';
+
+// ----------------------------------------------------------------------
+
+export type NewsletterSubscriber = {
+  email: string;
+  subscribedAt: Date | null;
+};
+
+export function useNewsletterSubscribers() {
+  const [subscribers, setSubscribers] = useState<NewsletterSubscriber[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(FIRESTORE, 'newsletterSubscribers'), orderBy('subscribedAt', 'desc'));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const fetched = snapshot.docs.map((document) => {
+          const data = document.data();
+          const raw = data.subscribedAt;
+          const subscribedAt = raw?.toDate ? raw.toDate() : raw ? new Date(raw) : null;
+          return { email: document.id, subscribedAt };
+        });
+        setSubscribers(fetched);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching newsletter subscribers:', error);
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  return { subscribers, loading };
+}
 
 // ----------------------------------------------------------------------
 
