@@ -47,7 +47,7 @@ import { NotificationsDrawer } from '../components/notifications-drawer';
 // ----------------------------------------------------------------------
 
 function NewsletterForm() {
-  const { subscribe, checkSubscription, unsubscribe, loading } = useNewsletter();
+  const { subscribe, checkSubscription, unsubscribe, loading, error } = useNewsletter();
   const [email, setEmail] = useState('');
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -80,7 +80,7 @@ function NewsletterForm() {
         toast.success('Thank you for subscribing!');
         setEmail('');
       } else {
-        toast.error('Failed to subscribe or already subscribed.');
+        toast.error(error || 'Failed to subscribe. Please try again.');
       }
     }
   };
