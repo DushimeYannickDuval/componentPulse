@@ -154,7 +154,7 @@ export function BlogListView() {
 
                     <TableCell>
                       <Typography variant="body2">
-                        {post.createdAt ? format(post.createdAt?.toDate(), 'dd MMM yyyy') : 'N/A'}
+                        {post.createdAt ? format(post.createdAt instanceof Date ? post.createdAt : post.createdAt.toDate(), 'dd MMM yyyy') : 'N/A'}
                       </Typography>
                     </TableCell>
 

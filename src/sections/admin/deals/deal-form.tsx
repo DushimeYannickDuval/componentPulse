@@ -76,7 +76,7 @@ export function DealForm({ currentDeal }: Props) {
       trainingModuleIds: currentDeal?.trainingModuleIds || [],
       isActive: currentDeal?.isActive ?? true,
       coverImage: currentDeal?.coverImage || null,
-      endDate: currentDeal?.endDate ? currentDeal.endDate.toDate().toISOString().split('T')[0] : '',
+      endDate: currentDeal?.endDate ? (currentDeal.endDate instanceof Date ? currentDeal.endDate : currentDeal.endDate.toDate()).toISOString().split('T')[0] : '',
     }),
     [currentDeal]
   );

@@ -95,7 +95,7 @@ export function CouponsListView() {
       minOrderAmount: coupon.minOrderAmount || 0,
       maxUses: coupon.maxUses || 0,
       isActive: coupon.isActive,
-      expiresAt: coupon.expiresAt ? coupon.expiresAt.toDate().toISOString().split('T')[0] : '',
+      expiresAt: coupon.expiresAt ? (coupon.expiresAt instanceof Date ? coupon.expiresAt : coupon.expiresAt.toDate()).toISOString().split('T')[0] : '',
       description: coupon.description || '',
     });
     setDialogOpen(true);
@@ -183,7 +183,7 @@ export function CouponsListView() {
                 </TableRow>
               ) : (
                 coupons.map((coupon) => {
-                  const isExpired = coupon.expiresAt && coupon.expiresAt.toDate() < new Date();
+                  const isExpired = coupon.expiresAt && (coupon.expiresAt instanceof Date ? coupon.expiresAt : coupon.expiresAt.toDate()) < new Date();
                   return (
                     <TableRow key={coupon.id} hover>
                       <TableCell>
@@ -235,7 +235,7 @@ export function CouponsListView() {
                             variant="caption"
                             sx={{ color: isExpired ? 'error.main' : 'text.secondary' }}
                           >
-                            {fDateTime(coupon.expiresAt.toDate())}
+                            {fDateTime(coupon.expiresAt instanceof Date ? coupon.expiresAt : coupon.expiresAt.toDate())}
                           </Typography>
                         ) : (
                           <Typography variant="caption" sx={{ color: 'text.disabled' }}>

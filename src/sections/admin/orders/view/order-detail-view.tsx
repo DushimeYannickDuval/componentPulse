@@ -257,7 +257,7 @@ export function OrderDetailView({ orderId }: Props) {
             />
           </Stack>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Placed on {order.createdAt ? fDateTime(order.createdAt.toDate()) : '-'}
+            Placed on {order.createdAt ? fDateTime(order.createdAt instanceof Date ? order.createdAt : order.createdAt.toDate()) : '-'}
           </Typography>
         </Box>
         <Button

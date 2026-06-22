@@ -95,7 +95,7 @@ export function AdminTicketsView() {
                 <TableBody>
                   {tickets.map((ticket) => (
                     <TableRow key={ticket.id} hover>
-                      <TableCell>{fDate(ticket.createdAt?.toDate())}</TableCell>
+                      <TableCell>{ticket.createdAt ? fDate(ticket.createdAt instanceof Date ? ticket.createdAt : ticket.createdAt.toDate()) : '-'}</TableCell>
 
                       <TableCell>
                         <Label>{ticket.ticketNumber}</Label>

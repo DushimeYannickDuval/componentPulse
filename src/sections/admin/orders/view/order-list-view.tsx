@@ -195,7 +195,7 @@ export function OrderListView() {
                     </TableCell>
                     <TableCell>
                       <Typography variant="body2">
-                        {order.createdAt ? fDateTime(order.createdAt.toDate()) : '-'}
+                        {order.createdAt ? fDateTime(order.createdAt instanceof Date ? order.createdAt : order.createdAt.toDate()) : '-'}
                       </Typography>
                     </TableCell>
                     <TableCell align="right">

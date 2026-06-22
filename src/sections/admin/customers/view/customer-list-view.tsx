@@ -170,7 +170,7 @@ export function CustomerListView() {
                     </TableCell>
                     <TableCell>{customer.phone || '-'}</TableCell>
                     <TableCell>
-                      {customer.createdAt ? fDate(customer.createdAt.toDate()) : '-'}
+                      {customer.createdAt ? fDate(customer.createdAt instanceof Date ? customer.createdAt : customer.createdAt.toDate()) : '-'}
                     </TableCell>
                     <TableCell>
                       <Chip
