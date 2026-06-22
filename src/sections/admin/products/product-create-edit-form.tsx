@@ -37,6 +37,7 @@ type ProductFormValues = {
   name: string;
   description: string;
   shortDescription: string;
+  specifications: string;
   sku: string;
   price: number;
   compareAtPrice: number;
@@ -76,6 +77,7 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
     name: '',
     description: '',
     shortDescription: '',
+    specifications: '',
     sku: '',
     price: 0,
     compareAtPrice: 0,
@@ -111,7 +113,8 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
       reset({
         name: currentProduct.name,
         shortDescription: currentProduct.shortDescription,
-        description: currentProduct.description ||'',        
+        description: currentProduct.description ||'',
+        specifications: currentProduct.specifications || '',        
         sku: currentProduct.sku,
         price: currentProduct.price,
         compareAtPrice: currentProduct.compareAtPrice || 0,
@@ -165,6 +168,7 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
         name: data.name,
         shortDescription: data.shortDescription,
         description: data.description || '',
+        specifications: data.specifications || '',
         sku: data.sku,
         price: Number(data.price) || 0,
         stock: Number(data.stock) || 0,
@@ -276,6 +280,11 @@ export function ProductCreateEditForm({ currentProduct }: Props) {
           <Stack spacing={1.5}>
             <Typography variant="subtitle2">Description (Markdown supported)</Typography>
             <Field.Editor name="description" sx={{ maxHeight: 480 }} />
+          </Stack>
+
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle2">Specifications (Markdown supported)</Typography>
+            <Field.Editor name="specifications" sx={{ maxHeight: 480 }} />
           </Stack>
 
           <Stack spacing={1.5}>

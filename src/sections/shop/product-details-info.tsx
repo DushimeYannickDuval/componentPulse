@@ -111,11 +111,11 @@ export function ProductDetailsInfo({ product }: Props) {
             <Box component="span">{fCurrency(product.price)}</Box>
           )}
         </Stack>
-        <Box>
-          <Markdown
-            children={product.description || 'No description available for this product.'}
-          />
-        </Box>
+        {(product.shortDescription || product.description) && (
+          <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.8 }}>
+            {product.shortDescription || product.description}
+          </Typography>
+        )}
       </Stack>
 
       <Divider sx={{ borderStyle: 'dashed', my: 3 }} />

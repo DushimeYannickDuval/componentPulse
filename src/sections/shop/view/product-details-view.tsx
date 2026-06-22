@@ -114,6 +114,7 @@ export function ProductDetailsView({ slug }: Props) {
             sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
             <Tab value="description" label="Description" />
+            <Tab value="specifications" label="Specifications" />
             <Tab value="reviews" label="Reviews" />
           </Tabs>
 
@@ -123,6 +124,18 @@ export function ProductDetailsView({ slug }: Props) {
                 <Markdown
                   children={product.description || 'No description available for this product.'}
                 />
+              </Box>
+            )}
+
+            {currentTab === 'specifications' && (
+              <Box>
+                {product.specifications ? (
+                  <Markdown children={product.specifications} />
+                ) : (
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    No specifications available for this product.
+                  </Typography>
+                )}
               </Box>
             )}
 
