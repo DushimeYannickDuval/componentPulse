@@ -40,7 +40,7 @@ const TESTIMONIALS = [
   {
     name: 'Robert Kizza',
     role: 'Solar Installer',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1546525848-3ce03ca516f6?q=80',
     rating: 5,
     content:
       'ComponentPulse has been my go-to supplier for all solar equipment. Their quality is unmatched and delivery is always on time. Highly recommend for anyone in the solar business!',
@@ -48,7 +48,7 @@ const TESTIMONIALS = [
   {
     name: 'Sarah Namukasa',
     role: 'Electrical Contractor',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1523824921871-d6f1a15151f1?q=80',
     rating: 5,
     content:
       "The best prices in Kampala! I've compared with many suppliers and ComponentPulse consistently offers better deals without compromising on quality. Their customer service is excellent too.",
@@ -56,7 +56,7 @@ const TESTIMONIALS = [
   {
     name: 'James Okello',
     role: 'Home Owner',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1587064712555-6e206484699b?q=80',
     rating: 5,
     content:
       'Bought my entire home solar system from here. The technical team helped me choose the right components and even provided installation guidance. My electricity bills are now zero!',
@@ -64,7 +64,7 @@ const TESTIMONIALS = [
   {
     name: 'Grace Akello',
     role: 'Business Owner',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80',
     rating: 5,
     content:
       'As a business owner, reliable power is crucial. ComponentPulse supplied our backup power system and it has been working flawlessly for over 2 years now.',
@@ -72,15 +72,15 @@ const TESTIMONIALS = [
   {
     name: 'David Mugisha',
     role: 'IT Technician',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1518882570151-157128e78fa1?q=80',
     rating: 5,
     content:
       'Great selection of electronic components. Found everything I needed for my projects. The staff is knowledgeable and helped me find compatible parts.',
   },
   {
-    name: 'Patricia Nakato',
+    name: 'Patric otto',
     role: 'Farm Manager',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+    avatar: 'https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?q=80',
     rating: 5,
     content:
       'Installed solar pumps for our irrigation system. ComponentPulse provided excellent products and after-sales support. Our farm productivity has increased significantly.',
