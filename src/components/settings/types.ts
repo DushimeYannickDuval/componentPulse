@@ -1,6 +1,6 @@
 import type { Theme, SxProps } from '@mui/material/styles';
 import type { ThemeConfig } from 'src/theme/theme-config';
-import type { ThemeColorPreset } from 'src/theme/with-settings';
+// import type { ThemeColorPreset } from 'src/theme/with-settings';
 
 // ----------------------------------------------------------------------
 
