@@ -312,28 +312,28 @@ export function SettingsDrawer({ sx, defaultSettings }: SettingsDrawerProps) {
   //   >
   //     {renderHead()}
 
-      <Scrollbar>
-        <Box
-          sx={{
-            pb: 5,
-            gap: 6,
-            px: 2.5,
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <Box sx={{ gap: 2, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
-            {visibility.mode && renderMode()}
-            {visibility.contrast && renderContrast()}
-            {visibility.direction && renderDirection()}
-            {visibility.compactLayout && renderCompactLayout()}
-          </Box>
+  //     <Scrollbar>
+  //       <Box
+  //         sx={{
+  //           pb: 5,
+  //           gap: 6,
+  //           px: 2.5,
+  //           display: 'flex',
+  //           flexDirection: 'column',
+  //         }}
+  //       >
+  // //         <Box sx={{ gap: 2, display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+  // //           {visibility.mode && renderMode()}
+  // //           {visibility.contrast && renderContrast()}
+  // //           {visibility.direction && renderDirection()}
+  // //           {visibility.compactLayout && renderCompactLayout()}
+  // //         </Box>
 
-          {(visibility.navColor || visibility.navLayout) && renderNav()}
-          {visibility.primaryColor && renderPresets()}
-          {(visibility.fontFamily || visibility.fontSize) && renderFont()}
-        </Box>
-      </Scrollbar>
-    </Drawer>
-  );
+  // //         {(visibility.navColor || visibility.navLayout) && renderNav()}
+  // //         {visibility.primaryColor && renderPresets()}
+  // //         {(visibility.fontFamily || visibility.fontSize) && renderFont()}
+  // //       </Box>
+  // //     </Scrollbar>
+  // //   </Drawer>
+  // // );
 }
