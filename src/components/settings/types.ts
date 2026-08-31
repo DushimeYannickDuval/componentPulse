@@ -5,16 +5,16 @@ import type { ThemeColorPreset } from 'src/theme/with-settings';
 // ----------------------------------------------------------------------
 
 export type SettingsState = {
-  version: string;
-  fontSize: number;
-  fontFamily: string;
-  compactLayout: boolean;
-  contrast: 'default' | 'high';
-  primaryColor: ThemeColorPreset;
+  // version: string;
+  // fontSize: number;
+  // fontFamily: string;
+  // compactLayout: boolean;
+  // contrast: 'default' | 'high';
+  // primaryColor: ThemeColorPreset;
   mode: ThemeConfig['defaultMode'];
-  navColor: 'integrate' | 'apparent';
-  direction: ThemeConfig['direction'];
-  navLayout: 'vertical' | 'horizontal' | 'mini';
+  // navColor: 'integrate' | 'apparent';
+  // direction: ThemeConfig['direction'];
+  // navLayout: 'vertical' | 'horizontal' | 'mini';
 };
 
 export type SettingsContextValue = {
