@@ -38,10 +38,11 @@ export function SettingsProvider({
     setOpenDrawer(false);
   }, []);
 
-  const canReset = !isEqual(state, defaultSettings);
+  const canReset = !isEqual(state.mode, defaultSettings.mode);
 
   const onReset = useCallback(() => {
-    resetState(defaultSettings);
+    resetState(mode:
+               defaultSettings.mode);
   }, [defaultSettings, resetState]);
 
   // Version check and reset handling
