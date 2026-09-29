@@ -59,7 +59,7 @@ export function ProductShopView() {
   const initialCategory = searchParams.get('category') || '';
 
   const [search, setSearch] = useState(initialSearch);
-  const [sortBy, setSortBy] = useState('newest');
+  const [sortBy, setSortBy] = useState('name-desc');
   const [viewMode, setViewMode] = useState('grid');
   const [page, setPage] = useState(1);
 
