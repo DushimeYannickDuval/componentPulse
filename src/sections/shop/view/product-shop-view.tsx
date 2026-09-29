@@ -34,11 +34,11 @@ import { ProductListItem } from '../product-list-item';
 // ----------------------------------------------------------------------
 
 const SORT_OPTIONS = [
-  { value: 'newest', label: 'Latest' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'name-asc', label: 'Name: A to Z' },
   { value: 'name-desc', label: 'Name: Z to A' },
+  { value: 'name-asc', label: 'Name: A to Z' },
+  { value: 'price-desc', label: 'Price: High to Low' },  
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'newest', label: 'Latest' },
 ];
 
 const VIEW_OPTIONS = [
