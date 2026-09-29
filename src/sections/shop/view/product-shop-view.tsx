@@ -34,7 +34,7 @@ import { ProductListItem } from '../product-list-item';
 // ----------------------------------------------------------------------
 
 const SORT_OPTIONS = [
-  { value: 'name-desc', label: 'Name: Z to A' },
+  { value: 'name-desc', label: 'Name: Z' },
   { value: 'name-asc', label: 'Name: A to Z' },
   { value: 'price-desc', label: 'Price: High to Low' },  
   { value: 'price-asc', label: 'Price: Low to High' },
