@@ -169,11 +169,11 @@ export function ProductShopView() {
       case 'name-asc':
         result.sort((a, b) => a.name.localeCompare(b.name));
         break;
-      case 'name-desc':
+      case 'newest':
         result.sort((a, b) => b.name.localeCompare(a.name));
         break;
       default:
-        // newest - sort by createdAt if available
+        // name-desc - sort by createdAt if available
         break;
     }
 
